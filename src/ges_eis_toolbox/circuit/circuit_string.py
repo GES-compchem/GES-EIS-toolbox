@@ -1,7 +1,7 @@
 from __future__ import annotations
 from typing import List
 
-from eis_toolbox.utils import remove_numbers
+from ges_eis_toolbox.utils import remove_numbers
 
 class CircuitString:
     """

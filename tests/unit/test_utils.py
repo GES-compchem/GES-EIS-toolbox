@@ -1,4 +1,4 @@
-from eis_toolbox.utils import remove_numbers
+from ges_eis_toolbox.utils import remove_numbers
 
 # Test the remove number function
 def test_remove_number():

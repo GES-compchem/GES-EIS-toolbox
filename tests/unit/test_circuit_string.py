@@ -1,5 +1,5 @@
 import traceback
-from eis_toolbox.circuit.circuit_string import CircuitString
+from ges_eis_toolbox.circuit.circuit_string import CircuitString
 
 
 # Test that the CircuitString constructor runs without exceptions
@@ -34,7 +34,7 @@ def test_CircuitString___str____repr__():
 
     string = "R0-p(C0,R1)-R2-C1"
     obj = CircuitString(string)
-    
+
     assert str(obj) == string
     assert repr(obj) == string
 
@@ -52,7 +52,7 @@ def test_CircuitString___add__():
         assert False, f"Unexpected exception raised during CircuitString addition (+)"
     else:
         assert True
-    
+
     assert type(c) == CircuitString
     assert c.value == "R0-p(C0,R1)-R2-C1"
 
@@ -70,7 +70,7 @@ def test_CircuitString___iadd__():
         assert False, f"Unexpected exception raised during CircuitString self addition (+=)"
     else:
         assert True
-    
+
     assert type(a) == CircuitString
     assert a.value == "R0-p(C0,R1)-R2-C1"
     assert b.value == "R2-C1"
@@ -111,7 +111,7 @@ def test_CircuitString_remove_numbers():
     obj = CircuitString(string)
 
     cs = obj.remove_numbers()
-    
+
     assert type(cs) == CircuitString
     assert cs.value == "R-p(C,R)-R-C"
 
@@ -124,7 +124,7 @@ def test_CircuitString_reorder():
 
     reordered = obj.reorder()
 
-    assert reordered.value == "C1-R0-R2-p(C0,R1)-p(R3,p(C2,L1))" 
+    assert reordered.value == "C1-R0-R2-p(C0,R1)-p(R3,p(C2,L1))"
 
 
 # Test the CircuitString properties
@@ -132,14 +132,14 @@ def test_CircuitString_properties():
 
     string = "R0-p(C0,R1)-R2-C1"
     obj = CircuitString(string)
-    
+
     assert obj.value == string
     assert obj.number_of_components == 5
 
 
 # Test the is_simple_series property
 def test_CircuitString_is_simple_series():
-    
+
     obj_1 = CircuitString("R0-p(C0,R1)-R2-C1")
     obj_2 = CircuitString("R0-C0-R1-R2-C1")
 

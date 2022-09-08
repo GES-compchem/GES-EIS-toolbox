@@ -5,7 +5,7 @@ build-backend = "setuptools.build_meta"
 [tool.pytest.ini_options]
 addopts = "--cov=ges-eis-toolbox"
 testpaths = [
-    "tests",
+    "tests/unit",
 ]
 
 [tool.mypy]
