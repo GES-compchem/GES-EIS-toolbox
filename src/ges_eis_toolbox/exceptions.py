@@ -67,3 +67,20 @@ class InvalidComponent(Exception):
 
     def __str__(self) -> str:
         return """The component type '{}' is not supported.""".format(self.__name)
+    
+class InvalidParametrization(Exception):
+    """
+    Exception raised when an mismatch in component naming is encountered in the definition of
+    an equivalent circuit.
+
+    Parameters
+    ----------
+    msg : str
+        a message explaining the error
+    """
+    def __init__(self, msg: str, *args: object) -> None:
+        super().__init__(*args)
+        self.__msg = remove_numbers(msg)
+
+    def __str__(self) -> str:
+        return """{}""".format(self.__msg)

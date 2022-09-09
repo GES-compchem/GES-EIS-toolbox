@@ -106,7 +106,7 @@ class CircuitString:
 
         return blocks
 
-    def list_components(self) -> List[str]:
+    def list_components(self, sort: bool = True) -> List[str]:
         """
         Returns the labels associated to each component in the circuit in alphabetical order
 
@@ -133,8 +133,10 @@ class CircuitString:
             buffer = buffer[0:-1]
 
         # split, sort and return the buffer
-        buffer = buffer.split(",")        
-        buffer.sort()
+        buffer = buffer.split(",")
+        
+        if sort:    
+            buffer.sort()
 
         return buffer
 

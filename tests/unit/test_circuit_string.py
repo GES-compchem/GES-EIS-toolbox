@@ -140,6 +140,19 @@ def test_CircuitString_list_components():
 
     assert components == ["C0", "C1", "R0", "R1", "R2"]
 
+# Test the list_components function of the CircuitString class with the unsorted option
+def test_CircuitString_list_components_unsorted():
+
+    string = "R0-p(C0,R1)-R2-C1"
+    obj = CircuitString(string)
+
+    components = obj.list_components(sort=False)
+
+    for s in components:
+        assert type(s) == str
+
+    assert components == ["R0", "C0", "R1", "R2", "C1"]
+
 
 # Test the remove_numbers function of the CircuitString class
 def test_CircuitString_remove_numbers():
