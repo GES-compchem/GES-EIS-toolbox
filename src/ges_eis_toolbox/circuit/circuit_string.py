@@ -1,5 +1,5 @@
 from __future__ import annotations
-from typing import List
+from typing import Dict, List, Tuple
 
 from ges_eis_toolbox.utils import remove_numbers
 from ges_eis_toolbox.exceptions import InvalidSyntax, InvalidComponent
@@ -205,6 +205,56 @@ class CircuitString:
                 obj += CircuitString(block)
             return obj
 
+    def reorder_labels(self) -> Tuple[CircuitString, Dict[str, str]]:
+        """
+        Returns the circuit string in which the components labels have been assigned in 
+        progressive order, without gaps, to number each component type
+
+        Returns
+        -------
+        CircuitString
+            the circuit string with the updated labels
+        Dict[str, str]
+            dictionary mapping the old component symbol (key) to the new one
+        """
+        # Obtain the list of components in the same order in which they appear in the string
+        current_order = self.list_components(sort=False)
+
+        # Extract the component types from the component list and prepare a counter for each
+        # of them to keep track of the label to be used 
+        component_types = set(self.remove_numbers().list_components())
+        counter = {x : 0 for x in component_types}
+        
+        # Compile a conversion table by assigning a new name to each component
+        conversion_table = {}
+        for old_symbol in current_order:
+            ctype = remove_numbers(old_symbol)          # Get the component type
+            new_symbol = ctype + str(counter[ctype])    # Generate a new symbol for the component
+            counter[ctype] += 1                         # Increment the counter
+            conversion_table[old_symbol] = new_symbol   # Add the new correspondence to the conversion table
+        
+        # Define a new string in which the old component symbols are exchanged with the new ones.
+        # Start by iterating from index (idx) 0 and define a buffer to store the part of string
+        # that has been parsed. For each component iterate over the string until a stop symbol
+        # [",", "-", "p", "(", ")"] is encountered. Once the component symbol has been obtained
+        # swap it with the one in the comnversion table. Copy the stop symbol and move to the next
+        # iteration.
+        idx = 0
+        new_string = ""
+        while idx<len(self.__string):
+            buffer = ""
+
+            for char in self.__string[idx::]:
+                idx += 1
+                if char in [",", "-", "p", "(", ")"]:
+                    if buffer != "":
+                        new_string += conversion_table[buffer]
+                    new_string += char
+                    break
+                else:
+                    buffer += char
+        
+        return CircuitString(new_string), conversion_table
 
     @property
     def value(self):

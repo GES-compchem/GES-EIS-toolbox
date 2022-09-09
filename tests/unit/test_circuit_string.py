@@ -102,15 +102,19 @@ def test_CircutString__validate():
         except InvalidSyntax:
             assert True
         else:
-            assert False, f"An InvalidSyntax exception was expected from CircuitString validation"
-        
+            assert (
+                False
+            ), f"An InvalidSyntax exception was expected from CircuitString validation"
+
     invalid_component = CircuitString("R0-p(R1,X0)")
     try:
         invalid_component._validate()
     except InvalidComponent:
         assert True
     else:
-        assert False, f"An InvalidComponent exception was expected from CircuitString validation"
+        assert (
+            False
+        ), f"An InvalidComponent exception was expected from CircuitString validation"
 
 
 # Test the decompose_series function of the CircuitString class
@@ -139,6 +143,7 @@ def test_CircuitString_list_components():
         assert type(s) == str
 
     assert components == ["C0", "C1", "R0", "R1", "R2"]
+
 
 # Test the list_components function of the CircuitString class with the unsorted option
 def test_CircuitString_list_components_unsorted():
@@ -174,7 +179,32 @@ def test_CircuitString_reorder():
 
     reordered = obj.reorder()
 
+    assert type(reordered) == CircuitString
     assert reordered.value == "C1-R0-R2-p(C0,R1)-p(R3,p(C2,L1))"
+
+
+# Test the reorder_labels function of the CircuitString class
+def test_CircuitString_reorder_labels():
+
+    string = "R1-p(R0,C0)-R2-C1-p(R4,p(R3,C2))"
+    obj = CircuitString(string)
+
+    reordered, conversion = obj.reorder_labels()
+
+    assert type(reordered) == CircuitString
+    assert reordered.value == "R0-p(R1,C0)-R2-C1-p(R3,p(R4,C2))"
+
+    assert type(conversion) == dict
+    assert conversion == {
+        "R1": "R0",
+        "R0": "R1",
+        "C0": "C0",
+        "R2": "R2",
+        "C1": "C1",
+        "R3": "R4",
+        "R4": "R3",
+        "C2": "C2",
+    }
 
 
 # Test the CircuitString properties
