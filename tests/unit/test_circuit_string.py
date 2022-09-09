@@ -1,4 +1,6 @@
 import traceback
+
+from ges_eis_toolbox.exceptions import InvalidSyntax, InvalidComponent
 from ges_eis_toolbox.circuit.circuit_string import CircuitString
 
 
@@ -74,6 +76,41 @@ def test_CircuitString___iadd__():
     assert type(a) == CircuitString
     assert a.value == "R0-p(C0,R1)-R2-C1"
     assert b.value == "R2-C1"
+
+
+# Test the validation function of the CircuitString class
+def test_CircutString__validate():
+
+    normal = CircuitString("R0-p(R1,C0)")
+    try:
+        normal._validate()
+    except:
+        print(traceback.format_exc())
+        assert False, f"Unexpected exception raised during CircuitString validation"
+    else:
+        assert True
+
+    invalid_syntax = [
+        CircuitString("R0-p(R1, C0)"),
+        CircuitString("R0-(R1,C0)"),
+        CircuitString("R0-p(R1,C0))"),
+    ]
+
+    for obj in invalid_syntax:
+        try:
+            obj._validate()
+        except InvalidSyntax:
+            assert True
+        else:
+            assert False, f"An InvalidSyntax exception was expected from CircuitString validation"
+        
+    invalid_component = CircuitString("R0-p(R1,X0)")
+    try:
+        invalid_component._validate()
+    except InvalidComponent:
+        assert True
+    else:
+        assert False, f"An InvalidComponent exception was expected from CircuitString validation"
 
 
 # Test the decompose_series function of the CircuitString class

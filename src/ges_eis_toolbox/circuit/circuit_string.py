@@ -2,6 +2,9 @@ from __future__ import annotations
 from typing import List
 
 from ges_eis_toolbox.utils import remove_numbers
+from ges_eis_toolbox.exceptions import InvalidSyntax, InvalidComponent
+
+_VALID_COMPONENTS = ("C", "CPE", "G", "Gs", "K", "L", "La", "R", "T", "TLMQ", "W", "Wo", "Ws")
 
 class CircuitString:
     """
@@ -28,7 +31,7 @@ class CircuitString:
         if type(string) != str:
             raise TypeError
 
-        self.__string = string       
+        self.__string = string
 
     def __str__(self) -> str:
         return self.__string
@@ -43,6 +46,31 @@ class CircuitString:
     def __iadd__(self, x: CircuitString) -> CircuitString:
         self.__string = "-".join([self.__string, x.value])
         return self
+    
+    def _validate(self) -> None:
+        """
+        Validate the circuit string by checking the type of components used and the formatting
+
+        Raises
+        ------
+        IvalidSyntax:
+            exception raised when an invalid circuit string syntax is used
+        InvalidComponent:
+            exception raised when an invalid component is used in the circuit definition
+        """
+        if " " in self.__string:
+            raise InvalidSyntax("Circuit sting should not contain spaces")
+        
+        if self.__string.count("(") != self.__string.count(")"):
+            raise InvalidSyntax("Mismatch in the number of open and closed brackets")
+        
+        if self.__string.count("(") != self.__string.count("p"):
+            raise InvalidSyntax("Mismatch between parallel units and number of brackets")
+
+        component_types = set(self.remove_numbers().list_components())
+        for ctype in component_types:
+            if ctype not in _VALID_COMPONENTS:
+                raise InvalidComponent(ctype)        
 
     def decompose_series(self) -> List[CircuitString]:
         """
@@ -94,8 +122,18 @@ class CircuitString:
         for char in ["(", ")", "-"]:
             buffer = buffer.replace(char, ",")
 
-        # Replace double ",," symbols with ",", split and sort the string buffer
-        buffer = buffer.replace(",,", ",").split(",")
+        # Replace double ",," symbols with ","
+        buffer = buffer.replace(",,", ",")
+        
+        # If the buffer starts or ends with "," remove the first/last character
+        if buffer.startswith(","):
+            buffer = buffer[1::]
+        
+        if buffer.endswith(","):
+            buffer = buffer[0:-1]
+
+        # split, sort and return the buffer
+        buffer = buffer.split(",")        
         buffer.sort()
 
         return buffer

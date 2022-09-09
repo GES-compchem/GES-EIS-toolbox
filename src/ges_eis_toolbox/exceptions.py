@@ -1,3 +1,5 @@
+from ges_eis_toolbox.utils import remove_numbers
+
 class FileNotFound(Exception):
     """
     Exception rised when an invalid file path is detected
@@ -32,3 +34,36 @@ class UnknownFileExtension(Exception):
 
     def __str__(self) -> str:
         return """The extension '{}' is not supported.""".format(self.__extension)
+
+
+class InvalidSyntax(Exception):
+    """
+    Exception raised when an invalid circut string syntax is detected
+    
+    Parameters
+    ----------
+    msg : str
+        the message containing the syntax error
+    """
+    def __init__(self, msg: str, *args: object) -> None:
+        super().__init__(*args)
+        self.__msg = remove_numbers(msg)
+
+    def __str__(self) -> str:
+        return """Syntax error in circuit string:\n{}""".format(self.__msg)
+
+class InvalidComponent(Exception):
+    """
+    Exception raised when an invalid component is used in the equivalent circuit representation
+
+    Parameters
+    ----------
+    name : str
+        the invalid component
+    """
+    def __init__(self, name: str, *args: object) -> None:
+        super().__init__(*args)
+        self.__name = remove_numbers(name)
+
+    def __str__(self) -> str:
+        return """The component type '{}' is not supported.""".format(self.__name)
