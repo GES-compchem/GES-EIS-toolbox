@@ -20,7 +20,7 @@ class EquivalentCircuit:
     parameters: Union[None, Dict[str, float]]
         a dictionary containing the list of components (as keys) associated to their value.
         If set to None will inizialize all the components values to None
-    
+
     Raises
     ------
     TypeError
@@ -45,13 +45,13 @@ class EquivalentCircuit:
             else {key: None for key in self.__circuit.list_components()}
         )
         self.__validate()
-    
+
     def __getitem__(self, name: str) -> float:
         if name in self.__parameters:
             return self.__parameters[name]
         else:
             raise ValueError
-    
+
     def __setitem__(self, name: str, value: float) -> float:
         if name in self.__parameters:
             self.__parameters[name] = value
@@ -91,6 +91,12 @@ class EquivalentCircuit:
                 if value is None:
                     raise ValueError
 
+    def reorder(self) -> None:
+
+        self.__circuit, ct = self.__circuit.reorder().reorder_labels()
+        self.__parameters = {ct[key]: value for key, value in self.__parameters.items()}
+        self.__validate()
+
     def simulate(self, frequency: List[float]) -> numpy.ndarray:
         """
         Simulate the circuit over the range of specified frequencies using the set of user-defined
@@ -100,7 +106,7 @@ class EquivalentCircuit:
         ----------
         frequency: List[float]
             list of frequency point on which the impedance must be computed
-        
+
         Returns
         -------
         numpy.ndarray
@@ -115,12 +121,19 @@ class EquivalentCircuit:
         with warnings.catch_warnings():
             warnings.simplefilter("ignore", category=UserWarning)
             Z = circuit.predict(f, use_initial=True)
-        
+
         return Z
-    
+
     @property
     def circuit_string(self) -> CircuitString:
         """
         The CircuitString object representing the equivalent circuit
         """
         return self.__circuit
+    
+    @property
+    def parameters(self) -> Dict[str, float]:
+        """
+        The parameters defining the equivalent circuit
+        """
+        return self.__parameters

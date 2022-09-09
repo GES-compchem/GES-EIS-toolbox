@@ -80,19 +80,32 @@ def test_EquivalentCircuit___setitem__():
     assert circ["R0"] == 0.5
 
 
+# Test the reorder method of the EquivalentCircuit class
+def test_EquivalentCircuit_reorder():
+
+    parameters = {"C0": 1, "C2": 2, "L2": 3, "R0": 4, "R1": 5}
+    circ = EquivalentCircuit("R1-p(C0,R0)-L2-C2", parameters=parameters)
+
+    circ.reorder()
+    assert circ.circuit_string.value == "C0-L0-R0-p(C1,R1)"
+    assert circ.parameters == {'C1': 1, 'C0': 2, 'L0': 3, 'R1': 4, 'R0': 5}
+
+
 # Test the simulate function of the EquivalentCircuit class
 def test_EquivalentCircuit_simulate():
 
     c = EquivalentCircuit("R0-p(C0,R1)", parameters={"R0": 0.1, "C0": 0.01, "R1": 10})
     result = c.simulate([0.1, 10, 1000, 100000])
 
-    expected = np.array([
+    expected = np.array(
+        [
             10.06067682 - 6.25847783e-01j,
             0.34704523 - 1.55223096e00j,
             0.10002533 - 1.59154540e-02j,
             0.1 - 1.59154943e-04j,
-        ])
-    
+        ]
+    )
+
     assert_array_almost_equal(result, expected, decimal=6)
 
 
@@ -103,3 +116,6 @@ def test_EquivalentCircuit_properties():
 
     assert type(c.circuit_string) == CircuitString
     assert c.circuit_string.value == "R0-p(C0,R1)"
+
+    assert type(c.parameters) == dict
+    assert c.parameters == {"R0": 0.1, "C0": 0.01, "R1": 10}
