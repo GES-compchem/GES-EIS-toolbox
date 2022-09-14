@@ -205,6 +205,17 @@ def test_CircuitString_reorder_labels():
         "R4": "R3",
         "C2": "C2",
     }
+    
+    string = "R1"
+    obj = CircuitString(string)
+
+    reordered, conversion = obj.reorder_labels()
+
+    assert type(reordered) == CircuitString
+    assert reordered.value == "R0"
+
+    assert type(conversion) == dict
+    assert conversion == {"R1": "R0"}
 
 
 # Test the CircuitString properties

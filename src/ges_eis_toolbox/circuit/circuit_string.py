@@ -243,7 +243,6 @@ class CircuitString:
         new_string = ""
         while idx<len(self.__string):
             buffer = ""
-
             for char in self.__string[idx::]:
                 idx += 1
                 if char in [",", "-", "p", "(", ")"]:
@@ -253,7 +252,10 @@ class CircuitString:
                     break
                 else:
                     buffer += char
-        
+            else:
+                if buffer != "":
+                    new_string += conversion_table[buffer]           
+
         return CircuitString(new_string), conversion_table
 
     @property
