@@ -18,6 +18,8 @@ class EIS_Spectrum:
     ------
     TypeError
         exception raised when the wrong type of argument is passed to the class constructor
+    ValueError
+        exception raised when a mismatch is detected between the lengths of frequency and impedance
     """
 
     def __init__(
@@ -33,7 +35,7 @@ class EIS_Spectrum:
             raise TypeError("impedance must be of type numpy.ndarray or List[float]")
 
         if len(frequency) != len(impedance):
-            raise RuntimeError(
+            raise ValueError(
                 "Mismatch between the number of frequency and impedance points."
             )
 
