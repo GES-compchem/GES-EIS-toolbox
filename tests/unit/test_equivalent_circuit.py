@@ -88,7 +88,7 @@ def test_EquivalentCircuit_reorder():
 
     circ.reorder()
     assert circ.circuit_string.value == "C0-L0-R0-p(C1,R1)"
-    assert circ.parameters == {'C1': 1, 'C0': 2, 'L0': 3, 'R1': 4, 'R0': 5}
+    assert circ.parameters == {"C1": 1, "C0": 2, "L0": 3, "R1": 4, "R0": 5}
 
 
 # Test the simulate function of the EquivalentCircuit class
@@ -103,6 +103,26 @@ def test_EquivalentCircuit_simulate():
             0.34704523 - 1.55223096e00j,
             0.10002533 - 1.59154540e-02j,
             0.1 - 1.59154943e-04j,
+        ]
+    )
+
+    assert_array_almost_equal(result, expected, decimal=6)
+
+
+# Test the simulate function of the EquivalentCircuit class with components defined by 2 or more parameters
+def test_EquivalentCircuit_simulate_multiple_parameters():
+
+    c = EquivalentCircuit(
+        "R0-p(CPE0,R1)", parameters={"R0": 0.1, "CPE0": [0.01, 1.2], "R1": 10}
+    )
+    result = c.simulate([0.1, 10, 1000, 100000])
+
+    expected = np.array(
+        [
+            10.248929 - 5.625940e-01j,
+            -0.073121 - 6.875082e-01j,
+            0.099145 - 2.633084e-03j,
+            0.099997 - 1.048071e-05j,
         ]
     )
 

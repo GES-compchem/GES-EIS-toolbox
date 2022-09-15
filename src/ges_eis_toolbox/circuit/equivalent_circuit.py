@@ -2,6 +2,7 @@ import warnings, numpy
 from impedance.models.circuits import CustomCircuit
 from typing import Dict, List, Union
 
+from ges_eis_toolbox.utils import remove_numbers
 from ges_eis_toolbox.exceptions import InvalidParametrization
 from ges_eis_toolbox.circuit.circuit_string import CircuitString
 
@@ -116,7 +117,21 @@ class EquivalentCircuit:
         self.__validate(check_none=True)
 
         f = numpy.array(frequency)
-        circuit = CustomCircuit(self.__circuit.value, constants=self.__parameters)
+        
+        constants = {}
+        for key, parameter in self.__parameters.items():
+            
+            ctype = remove_numbers(key)
+            cnumber = key.strip(ctype)
+            symbol = f"{ctype}{cnumber}"
+
+            if type(parameter) == list:
+                for i, p in enumerate(parameter):
+                    constants[f"{symbol}_{i}"] = float(p)
+            else:
+                constants[symbol] = float(parameter)
+
+        circuit = CustomCircuit(self.__circuit.value, constants=constants)
 
         with warnings.catch_warnings():
             warnings.simplefilter("ignore", category=UserWarning)
