@@ -80,6 +80,27 @@ def test_EquivalentCircuit___setitem__():
     assert circ["R0"] == 0.5
 
 
+# Test the __eq__ method of the EquivalentCircuit class
+def test_EquivalentCircuit___eq__():
+
+    a = EquivalentCircuit("R0-p(C0,R1)", parameters={"R0": 0.1, "C0": 0.01, "R1": 10})
+    b = EquivalentCircuit("R0-p(C0,R1)", parameters={"R0": 0.1, "C0": 0.01, "R1": 10})
+    c = EquivalentCircuit("R1-p(C0,R0)", parameters={"R0": 10, "C0": 0.01, "R1": 0.1})
+
+    assert a==b
+    assert not a==c
+
+# Test the __ne__ method of the EquivalentCircuit class
+def test_EquivalentCircuit___ne__():
+
+    a = EquivalentCircuit("R0-p(C0,R1)", parameters={"R0": 0.1, "C0": 0.01, "R1": 10})
+    b = EquivalentCircuit("R0-p(C0,R1)", parameters={"R0": 0.1, "C0": 0.01, "R1": 10})
+    c = EquivalentCircuit("R1-p(C0,R0)", parameters={"R0": 10, "C0": 0.01, "R1": 0.1})
+
+    assert not a!=b
+    assert a!=c
+
+
 # Test the reorder method of the EquivalentCircuit class
 def test_EquivalentCircuit_reorder():
 

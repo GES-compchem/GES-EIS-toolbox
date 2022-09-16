@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import warnings, numpy
 from impedance.models.circuits import CustomCircuit
 from typing import Dict, List, Union
@@ -11,7 +13,9 @@ class EquivalentCircuit:
     """
     Class to hold the data relative to a parametrized EIS equivalent circuit. The class wraps
     the simulation routine provided by the impedance.py package. The class provides __getitem__
-    and __setitem__ methods to access/set the component values by name.
+    and __setitem__ methods to access/set the component values by name. The __eq__ and __ne__
+    methods are also provided to check strict equality (equality between electrically equivalent
+    circuits will evaluate to true only if the circuit topology and component numbering matches)
 
     Parameters
     ----------
@@ -58,6 +62,18 @@ class EquivalentCircuit:
             self.__parameters[name] = value
         else:
             raise ValueError
+    
+    def __eq__(self, other: EquivalentCircuit) -> bool:
+
+        if str(self.circuit_string) != str(other.circuit_string):
+            return False
+        elif self.parameters != other.parameters:
+            return False
+        else:
+            return True
+    
+    def __ne__(self, other: EquivalentCircuit) -> bool:
+        return not (self == other)
 
     def __validate(self, check_none: bool = False) -> None:
         """
