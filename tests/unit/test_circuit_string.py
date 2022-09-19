@@ -1,4 +1,4 @@
-import traceback
+import traceback, pytest
 
 from ges_eis_toolbox.exceptions import InvalidSyntax, InvalidComponent
 from ges_eis_toolbox.circuit.circuit_string import CircuitString
@@ -91,9 +91,9 @@ def test_CircutString__validate():
         assert True
 
     invalid_syntax = [
-        CircuitString("R0-p(R1, C0)"),
-        CircuitString("R0-(R1,C0)"),
-        CircuitString("R0-p(R1,C0))"),
+        CircuitString("R0-p(R1, C0)", validate=False),
+        CircuitString("R0-(R1,C0)", validate=False),
+        CircuitString("R0-p(R1,C0))", validate=False),
     ]
 
     for obj in invalid_syntax:
@@ -106,7 +106,7 @@ def test_CircutString__validate():
                 False
             ), f"An InvalidSyntax exception was expected from CircuitString validation"
 
-    invalid_component = CircuitString("R0-p(R1,X0)")
+    invalid_component = CircuitString("R0-p(R1,X0)", validate=False)
     try:
         invalid_component._validate()
     except InvalidComponent:
@@ -183,6 +183,19 @@ def test_CircuitString_reorder():
     assert reordered.value == "C1-R0-R2-p(C0,R1)-p(R3,p(C2,L1))"
 
 
+# Test the reorder function of the CircuitString class for component numbers greater than 9
+@pytest.mark.xfail
+def test_CircuitString_reorder_high_nubers():
+
+    string = "R0-R2-R10-R1"
+    obj = CircuitString(string)
+
+    reordered = obj.reorder()
+
+    assert type(reordered) == CircuitString
+    assert reordered.value == "R0-R1-R2-R10"
+
+
 # Test the reorder_labels function of the CircuitString class
 def test_CircuitString_reorder_labels():
 
@@ -205,7 +218,7 @@ def test_CircuitString_reorder_labels():
         "R4": "R3",
         "C2": "C2",
     }
-    
+
     string = "R1"
     obj = CircuitString(string)
 
@@ -216,6 +229,20 @@ def test_CircuitString_reorder_labels():
 
     assert type(conversion) == dict
     assert conversion == {"R1": "R0"}
+
+
+# Test the permutation_base_groups function of the CircuitString class
+def test_CircuitString_permutation_base_groups():
+
+    string = "p(R0,C0)-R1-p(R2,C1)"
+    obj = CircuitString(string)
+
+    groups = obj.permutation_base_groups()
+
+    assert groups == {
+        "R0": [{"R1": "R0"}],
+        "p(C0,R0)": [{"C0": "C0", "R0": "R0"}, {"C1": "C0", "R2": "R0"}],
+    }
 
 
 # Test the CircuitString properties
@@ -242,13 +269,13 @@ def test_CircuitString_is_simple_series():
 def test_CircuitString_is_pure_parallel():
 
     obj_f1 = CircuitString("R0-p(C0,R1)-R2-C1")
-    obj_f2 = CircuitString("p(C0,p(R1, L1))-p(C1, R2)")
+    obj_f2 = CircuitString("p(C0,p(R1,L1))-p(C1,R2)")
 
     assert obj_f1.is_pure_parallel == False
     assert obj_f2.is_pure_parallel == False
 
     obj_t1 = CircuitString("p(C0,R1)")
-    obj_t2 = CircuitString("p(C0,p(R1, L1))")
+    obj_t2 = CircuitString("p(C0,p(R1,L1))")
     assert obj_t1.is_pure_parallel == True
     assert obj_t2.is_pure_parallel == True
 
@@ -257,9 +284,9 @@ def test_CircuitString_is_pure_parallel():
 def test_CircuitString_is_ordered():
 
     obj = CircuitString("R0-p(C0,R1)-R2-C1")
-   
+
     assert obj.is_ordered == False
-    
+
     ordered_obj, _ = obj.reorder().reorder_labels()
 
     assert ordered_obj.is_ordered == True
