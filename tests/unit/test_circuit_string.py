@@ -251,3 +251,15 @@ def test_CircuitString_is_pure_parallel():
     obj_t2 = CircuitString("p(C0,p(R1, L1))")
     assert obj_t1.is_pure_parallel == True
     assert obj_t2.is_pure_parallel == True
+
+
+# Test the is_ordered proprty
+def test_CircuitString_is_ordered():
+
+    obj = CircuitString("R0-p(C0,R1)-R2-C1")
+   
+    assert obj.is_ordered == False
+    
+    ordered_obj, _ = obj.reorder().reorder_labels()
+
+    assert ordered_obj.is_ordered == True
