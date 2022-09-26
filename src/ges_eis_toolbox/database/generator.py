@@ -1,12 +1,24 @@
+from __future__ import annotations
+
+import numpy
+import numpy as np
+from os import mkdir
+from os.path import isdir, abspath
+from dataclasses import dataclass
 from math import factorial
 from typing import Any, Dict, List, Union
+from multiprocessing import Pool, cpu_count
+
 from ges_eis_toolbox.circuit.circuit_string import CircuitString
+from ges_eis_toolbox.circuit.equivalent_circuit import EquivalentCircuit
+from ges_eis_toolbox.spectra.spectrum import EIS_Spectrum
+from ges_eis_toolbox.database.data_entry import DataPoint, DataOrigin
 
 
 class Range:
     """
-    Simple multiparametric range class capable of generating sequence of values given a maximum
-    and a minimum.
+    Simple multiparametric range class capable, given an index, of mapping one or more parameters
+    in a range between a maximum and a minimum.
 
     Parameters
     ----------
@@ -20,9 +32,10 @@ class Range:
     TypeError
         exception raised when the argument type does not match the expected ones (float or List[float])
     ValueError
-        exception raised when either min and max lists have different length or if at least 
+        exception raised when either min and max lists have different length or if at least
         one of the min values is greater than the correspondent max value
     """
+
     def __init__(
         self, min: Union[float, List[float]], max: Union[float, List[float]]
     ) -> None:
@@ -50,12 +63,12 @@ class Range:
         ---------
         input: Any
             input parameter to validate (either min or max)
-        
+
         Raises
         ------
         TypeError
             exception raised when the argument type does not match the expected ones (float or List[float])
-        
+
         Returns
         -------
         List[float]
@@ -74,6 +87,14 @@ class Range:
             return [float(x) for x in input]
 
     def __len__(self) -> int:
+        """
+        Define the length of the object as the number of parameters contained in the range
+
+        Returns
+        -------
+        int
+            the number of parameters considered in the object
+        """
         return self.__nparams
 
     @property
@@ -124,12 +145,12 @@ class Range:
             space
         steps: int
             the number of steps in which each dimension of the range is subdivided
-        
+
         Raises
         ------
         ValueError
             exception raised when either the `index` or the `steps` parameter assume an invalid value
-        
+
         Returns
         -------
         List[float]
@@ -153,8 +174,8 @@ class Range:
 
 class Generator:
     """
-    Simple genrator class capable of running multiple simulation of a given circuit exploring
-    with an omogeneus scheme a defined range of component parameters. The class take advantage
+    Simple genrator class capable of running multiple simulation of a given circuit exploring,
+    with an omogeneus scheme, a defined range of component parameters. The class take advantage
     of the series permutation symmetry of the circuit to reduce the number of simulation to
     be executed.
 
@@ -164,12 +185,12 @@ class Generator:
         the circuit string object representing the base circuit to simulate
     ranges: Dict[str, Dict[str, Range]]
         the dictionary encoding the range of component values to be explored. The key of the
-        dictionary represent the permutation base groups encoding the circuit while the values
+        dictionary represents the permutation base groups encoding the circuit while the values
         encode the range of values associated to each component. These are in turn organized in
         a dictionary in which the key are represented by the component symbols while the values
         are represented by Range objects.
     simulation_limit: int
-        sets the maximum number of simulation to be executed by the code (default: 1e+6). Please
+        sets the maximum number of simulations to be executed by the code (default: 1e+6). Please
         notice how this is different from the real number of simulations that is instead computed
         based on the circuit structure.
     steps_limit: Union[int, None]
@@ -221,7 +242,28 @@ class Generator:
         self.__number_of_simulations = self.__compute_number_of_simulations(self.__steps)
 
     def __compute_number_of_simulations(self, steps: int) -> int:
+        """
+        Computes the number of simulations resulting from an homogeneous subdivision of the
+        circuit configuration space in a given number of steps. The function takes into account
+        the reduction in the number of simulations associated with the series permutation symmetry
+        of the circuit.
 
+        Parameters
+        ----------
+        steps: int
+            number of steps in which each dimension of the configuration space is divided
+
+        Raises
+        ------
+        ValueError
+            exception raised if the step parameter is not a positive integer
+
+        Returns
+        -------
+        int
+            the number of simulations associated to a given `steps` value
+        """
+        # Check the validity of the given step value
         if type(steps) != int or steps <= 0:
             raise ValueError("The 'step' parameter must be a positive integer")
 
@@ -252,6 +294,30 @@ class Generator:
 
     @staticmethod
     def __number_of_configurations(elements: int, steps: int) -> int:
+        """
+        Compute the number of configurations generated from a given number of equivalent
+        variable `elements` mapped with a given number of `steps`. If `K` represents the
+        number of `elements` (x1, x2, ..., xK) and `N` the number of steps, the function
+        returns the value `(N+K-1)!/(K!*(N-1)!) representing all the configurations responding
+        to x1 >= x2 >= ... >= xK.
+
+        Parameters
+        ----------
+        elements: int
+            the number of equivalent elements in the circuit blocks
+        steps: int
+            the number of steps in which a given variable type is subdivided
+
+        Raises
+        ------
+        ValueError
+            if either the number of steps of elements assumes negative value
+
+        Returns
+        -------
+        int
+            the number of permutationally invariant configurations of a variable
+        """
 
         if elements < 0 or steps < 0:
             raise ValueError("Both 'elements' and 'steps' must be non negative integers")
@@ -260,7 +326,30 @@ class Generator:
             factorial(steps + elements - 1) / (factorial(elements) * factorial(steps - 1))
         )
 
-    def generate_parameterization(self, index: int) -> Dict[str, List[float]]:
+    def generate_parameterization(self, index: int) -> Dict[str, Union[float, List[float]]]:
+        """
+        Generate the parameterization associated to a given index taking into account the series
+        permutation symmetry of the circuit elements.
+
+        Parameters
+        ----------
+        index: int
+            the index of the desired circuit configuration
+
+        Raises
+        ------
+        ValueError
+            exception raised if the given index is invalid (either negative of greated then
+            the number of simulations)
+
+        Returns
+        -------
+        Dict[str, Union[float, List[float]]]
+            The dictionary encoding the parameterization of the circuit. The key of the dictionary
+            encode the component symbol while the values the associated parameters. If the only one
+            parameter is associated to a given component the value will be of type float else of
+            type List[float].
+        """
 
         # Check that the given index assumes a valid value
         if index < 0 or index >= self.__number_of_simulations:
@@ -275,7 +364,7 @@ class Generator:
         # conversion tables required to generate the correspondence with the real circuit
         for block, conversion_tables in self.__groups.items():
 
-            # Get a list of components in the base block
+            # Get a list of components in the symmetry base block
             base_components = CircuitString(block).list_components()
 
             # Get the number of instances of the current block in the real circuit and compute
@@ -306,19 +395,19 @@ class Generator:
                     # Compute the index that defines a (multi-element) variable block
                     parameter_index = pivot % cumulative_steps
 
-                    # Update to the pivot variable
+                    # Update the pivot variable to compute the index quotient to be passed to
+                    # the next parameter-based iterations
                     pivot = int((pivot - parameter_index) / cumulative_steps)
 
-                    # Define an order list that, for the current independent variable, will
+                    # Define an order list that, for the current independent variable. It will
                     # hold the order of the step associated to each permutationally invariant
                     # element. Iterate over each element to fill the list.
                     order_list = []
-
                     for eidx in range(number_of_elements):
 
                         # Define a 'total_configurations' variable to hold the sum of the number of
                         # configurations of the sub-group of elements explored when reaching
-                        # the current 'order' value
+                        # the current 'order' value.
                         total_configurations, order = 0, 0
                         while True:
 
@@ -371,15 +460,156 @@ class Generator:
                         )
 
                     component_range = self.__ranges[block][base_component]
-
                     parameter_list[key] = component_range.generate_step(value, self.__steps)
 
-        return parameter_list
+        return {
+            key: val if len(val) != 1 else val[0] for key, val in parameter_list.items()
+        }
+
+    def run(
+        self,
+        frequency: Union[List[float], numpy.ndarray],
+        cores: int = -1,
+        basename: str = "simulation",
+        folder: str = ".",
+    ) -> None:
+        """
+        Run all the simulations in parallel using a static scheduling and dump the results to
+        individual simulation files.
+
+        Parameters
+        ----------
+        frequency: Union[List[float], numpy.ndarray]
+            the list (or numpy array) containing the float frequency values at which the
+            circuit must be simulated
+        cores: int
+            the number of cores to be used by the simulation process. If set to `-1` (default)
+            will use all the cores available on the machine
+        basename: str
+            the basename of the generated datafiles (default: `simulation`). e.g. if basename
+            is set to `sim` the files generated will be named `sim_X.json` where `X` represents
+            the simulation index.
+        folder: str
+            the path to the folder in which the datafiles must be saved. (default: ".")
+
+        Raises
+        ------
+        ValueError
+            exception raised if the number of cores selected by the user is invalid
+        """
+        # Check the user provided number of cores
+        if cores == -1:
+            cores = cpu_count()
+        elif cores <= 0:
+            raise ValueError("Invalid number of cores selected.")
+
+        # Check if the folder indicated by the user exists, else create it
+        if isdir(folder) == False:
+            mkdir(folder)
+        folder = abspath(folder)
+
+        # Set up an equal division of the number of jobs to be assigned to each process
+        surplus = self.__number_of_simulations % cores
+        steps = int((self.__number_of_simulations - surplus) / cores)
+        start_points = [(i + 1) * steps for i in range(cores)]
+        start_points[-1] += surplus
+
+        # Generate the list of tasks to be performed by each process
+        tasks = []
+        for core in range(cores):
+            start = 0 if core == 0 else start_points[core - 1]
+            end = start_points[core]
+            freq = frequency if type(frequency) == list else [f for f in frequency]
+            tasks.append(Task(self, start, end, freq, basename, folder))
+
+        # Run all the processes in parallel
+        with Pool(processes=cores) as pool:
+            pool.map(job_engine, tasks)
 
     @property
     def number_of_simulations(self) -> int:
+        """
+        The number of simulation that will be executed
+
+        Returns
+        -------
+        int
+            the total number of sumulations
+        """
         return self.__number_of_simulations
 
     @property
     def number_of_steps(self) -> int:
+        """
+        The number of steps in which each parameter will be samples
+
+        Returns
+        -------
+        int
+            the total number of steps for each variable
+        """
         return self.__steps
+
+    @property
+    def circuit(self) -> CircuitString:
+        """
+        The circuit string representing the circuit to be simulated
+
+        Returns
+        -------
+        CircuitString
+            the `CrcuitString` object representing the circuit to be simulated
+        """
+        return self.__circuit
+
+
+@dataclass
+class Task:
+    """
+    Simple dataclass to hold the parameters required to run a simulation with the job_engine
+    function.
+
+    Parameters
+    ----------
+    gen: Generator
+        the object capable of generating, starting from a given index, the circuit parameterization
+        to be considered in the simulation.
+    start: int
+        the starting value of the range in which the index must be sampled (included in the simulation)
+    end: int
+        the end value of the range in which the index must be sampled (excluded from the simulation)
+    frequency: numpy.ndarray
+        the list holding the frequency values at which the circuit must be simulated
+    basename: str
+        the basename of the generated datafiles. e.g. if basename is set to `sim` the files
+        generated will be named `sim_X.json` where `X` represents the simulation index.
+    folder: str
+        the path to the folder in which the datafiles must be saved.
+    """
+
+    gen: Generator
+    start: int
+    end: int
+    frequency: List[float]
+    basename: str
+    folder: str
+
+
+def job_engine(task: Task):
+    """
+    Runs all the simulations encoded by the selected simulation task and saves the data into
+    a file.
+
+    Parameters
+    ----------
+    task: Task
+        the dataclass encoding the simulation parameters
+    """
+    for i in range(task.end - task.start):
+        idx = task.start + i
+        params = task.gen.generate_parameterization(idx)
+        circuit = EquivalentCircuit(task.gen.circuit, parameters=params)
+        Z = circuit.simulate(task.frequency)
+        spectrum = EIS_Spectrum(np.array(task.frequency), Z)
+        dp = DataPoint(DataOrigin.Real, equivalent_circuit=circuit, spectrum=spectrum)
+        dp.save(f"{task.basename}_{idx}", folder=task.folder)
