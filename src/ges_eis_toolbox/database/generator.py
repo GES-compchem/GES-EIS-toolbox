@@ -84,6 +84,11 @@ class Range:
         elif type(input) == float:
             return [input]
         else:
+            for x in input:
+                if type(x) != float:
+                    raise TypeError(
+                        "The 'min' and 'max' arguments must be of type 'float' or 'List[float]'"
+                    )
             return [float(x) for x in input]
 
     def __len__(self) -> int:
