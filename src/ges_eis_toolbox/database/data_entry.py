@@ -1,10 +1,13 @@
 from __future__ import annotations
 
 import json
+import matplotlib.pyplot as plt
+
 from os.path import isfile, join, abspath
 from dataclasses import dataclass
 from enum import Enum
 from typing import Union
+from impedance.visualization import plot_bode, plot_nyquist
 
 from ges_eis_toolbox.exceptions import FileNotFound
 from ges_eis_toolbox.circuit.equivalent_circuit import EquivalentCircuit
@@ -38,7 +41,6 @@ class DataPoint:
     spectrum: EIS_Spectrum
         the data relative to the EIS spectrum recorded/simulated
     """
-
 
     origin: DataOrigin
     user: Union[str, None] = None
@@ -81,7 +83,7 @@ class DataPoint:
         ----------
         path: str
             the path to the .json file containing the DataPoint information
-        
+
         Raises
         ------
         FileNotFound
@@ -94,16 +96,36 @@ class DataPoint:
         with open(path, "r") as file:
             data = json.load(file)
 
-        cls.origin = DataOrigin(data["origin"])
-        cls.user = data["user"]
-        cls.instrument = Instrument(data["instrument"])
+        origin = DataOrigin(data["origin"])
+        user = data["user"]
+        instrument = Instrument(data["instrument"]) if data["instrument"] else None
 
-        cls.equivalent_circuit = EquivalentCircuit(
+        equivalent_circuit = EquivalentCircuit(
             data["circuit"],
             parameters=data["parameters"],
         )
 
         impedance = [real + 1j * imag for real, imag in zip(data["real Z"], data["imag Z"])]
-        cls.spectrum = EIS_Spectrum(data["frequency"], impedance)
+        spectrum = EIS_Spectrum(data["frequency"], impedance)
 
-        return cls
+        return cls(origin, user, instrument, equivalent_circuit, spectrum)
+
+    def bode_plot(self, ax) -> None:
+
+        freq = self.spectrum.frequency
+        Z_exp = self.spectrum.impedance
+        Z_sim = self.equivalent_circuit.simulate(freq)
+
+        plot_bode(ax, freq, Z_exp, fmt="o")
+        plot_bode(ax, freq, Z_sim, fmt="-")
+        plt.legend(["Data", "Fit"])
+
+    def nyquist_plot(self, ax) -> None:
+
+        freq = self.spectrum.frequency
+        Z_exp = self.spectrum.impedance
+        Z_sim = self.equivalent_circuit.simulate(freq)
+
+        plot_nyquist(ax, Z_exp, fmt="o")
+        plot_nyquist(ax, Z_sim, fmt="-")
+        plt.legend(["Data", "Fit"])
