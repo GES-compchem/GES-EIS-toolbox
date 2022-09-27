@@ -1,4 +1,5 @@
 from __future__ import annotations
+from enum import Enum
 
 import numpy
 import numpy as np
@@ -13,6 +14,12 @@ from ges_eis_toolbox.circuit.circuit_string import CircuitString
 from ges_eis_toolbox.circuit.equivalent_circuit import EquivalentCircuit
 from ges_eis_toolbox.spectra.spectrum import EIS_Spectrum
 from ges_eis_toolbox.database.data_entry import DataPoint, DataOrigin
+
+
+class SamplingMode(Enum):
+
+    linear = "linear"
+    logarithmic = "logarithmic"
 
 
 class Range:
@@ -138,7 +145,21 @@ class Range:
         """
         return [x - y for x, y in zip(self.__max, self.__min)]
 
-    def generate_step(self, index: List[int], steps: int):
+    def __linear_step(self, index: List[int], steps: int) -> List[float]:
+        return [
+            min + delta * i / (steps - 1)
+            for min, delta, i in zip(self.min, self.delta, index)
+        ]
+
+    def __logarithmic_step(self, index: List[int], steps: int) -> List[float]:
+        return [
+            min * ((max / min) ** (i / (steps - 1)))
+            for min, max, i in zip(self.min, self.max, index)
+        ]
+
+    def generate_step(
+        self, index: List[int], steps: int, scheme: SamplingMode
+    ) -> List[float]:
         """
         Given the homogeneous subdivision of the range in `steps` parts, comutes the values of
         grid associated the point described by the list of indeces provided as the `index` variable
@@ -150,7 +171,8 @@ class Range:
             space
         steps: int
             the number of steps in which each dimension of the range is subdivided
-
+        scheme: SamplingMode
+            the type of sampling scheme adopted (options: `linear` or `logarithmic`)
         Raises
         ------
         ValueError
@@ -171,10 +193,12 @@ class Range:
                     "The 'index' parameter must be a non-negative integer smaller than 'steps'"
                 )
 
-        return [
-            min + delta * i / (steps - 1)
-            for min, delta, i in zip(self.min, self.delta, index)
-        ]
+        if scheme == SamplingMode.linear:
+            return self.__linear_step(index, steps)
+        elif scheme == SamplingMode.logarithmic:
+            return self.__logarithmic_step(index, steps)
+        else:
+            raise ValueError(f"'{scheme}' is not a valid sampling scheme")
 
 
 class Generator:
@@ -218,6 +242,7 @@ class Generator:
         ranges: Dict[str, Dict[str, Range]],
         simulation_limit: int = 1000000,
         steps_limit: Union[int, None] = None,
+        sampling_scheme: SamplingMode = SamplingMode.logarithmic,
     ) -> None:
 
         if type(circuit) != CircuitString:
@@ -230,6 +255,7 @@ class Generator:
             raise ValueError("Key mismatch between circuit base groups and 'ranges'.")
 
         self.__ranges = ranges
+        self.__sampling_scheme = sampling_scheme
 
         steps = 1
         while True:
@@ -465,7 +491,9 @@ class Generator:
                         )
 
                     component_range = self.__ranges[block][base_component]
-                    parameter_list[key] = component_range.generate_step(value, self.__steps)
+                    parameter_list[key] = component_range.generate_step(
+                        value, self.__steps, self.__sampling_scheme
+                    )
 
         return {
             key: val if len(val) != 1 else val[0] for key, val in parameter_list.items()

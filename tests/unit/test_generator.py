@@ -1,6 +1,6 @@
 from numpy.testing import assert_array_almost_equal
 
-from ges_eis_toolbox.database.generator import Range, Generator
+from ges_eis_toolbox.database.generator import Range, Generator, SamplingMode
 
 
 # TESTING THE RANGE CLASS
@@ -90,17 +90,31 @@ def test_Range___len__():
     assert len(r_2d) == 2
 
 
-# Test the generate_step function of the Range class
-def test_Range_generate_step():
+# Test the generate_step function of the Range class with linear scheme
+def test_Range_generate_step_linear():
 
-    r_1d = Range(0.1, 1.2)
-    r_2d = Range([0.4, 0.1], [0.5, 1.2])
+    r_1d = Range(0.1, 1.)
+    r_2d = Range([0.41, 0.1], [0.5, 1.])
 
-    x_1d = r_1d.generate_step([2], 5)
-    assert_array_almost_equal(x_1d, [0.65], decimal=6)
+    x_1d = r_1d.generate_step([2], 10, SamplingMode.linear)
+    assert_array_almost_equal(x_1d, [0.3], decimal=6)
 
-    x_2d = r_2d.generate_step([3, 2], 5)
-    assert_array_almost_equal(x_2d, [0.475, 0.65], decimal=6)
+    x_2d = r_2d.generate_step([3, 2], 10, SamplingMode.linear)
+    assert_array_almost_equal(x_2d, [0.44, 0.3], decimal=6)
+
+
+# Test the generate_step function of the Range class with logarithmic scheme
+def test_Range_generate_step_logarithmic():
+
+    r_1d = Range(0.1, 1.)
+    r_2d = Range([0.41, 0.1], [0.5, 1.])
+
+    x_1d = r_1d.generate_step([2], 11, SamplingMode.logarithmic)
+    assert_array_almost_equal(x_1d, [0.1584893192], decimal=6)
+
+    x_2d = r_2d.generate_step([3, 2], 11, SamplingMode.logarithmic)
+    assert_array_almost_equal(x_2d, [0.4351507146, 0.1584893192], decimal=6)
+
 
 
 # Test the Range class properties
