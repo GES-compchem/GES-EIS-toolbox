@@ -3,12 +3,12 @@ from enum import Enum
 
 import numpy
 import numpy as np
-from os import mkdir
+from os import mkdir, sched_getaffinity
 from os.path import isdir, abspath
 from dataclasses import dataclass
 from math import factorial
-from typing import Any, Dict, List, Union
-from multiprocessing import Pool, cpu_count
+from typing import Any, Dict, List, Tuple, Union
+from multiprocessing import Pool
 
 from ges_eis_toolbox.circuit.circuit_string import CircuitString
 from ges_eis_toolbox.circuit.equivalent_circuit import EquivalentCircuit
@@ -498,8 +498,47 @@ class Generator:
         return {
             key: val if len(val) != 1 else val[0] for key, val in parameter_list.items()
         }
+    
+    def __generate_static_scheduling(self, cores: int = -1) -> List[Tuple[int, int]]:
+        """
+        Given a user defined number of cores, generate in a static scheduling fashion, a list
+        of start and end points describing the workload boundary associated to each worker.
 
-    def run(
+        Parameters
+        ----------
+        cores: int
+            the number of cores used during the parallel computation
+        
+        Returns
+        -------
+        List[Tuple[int, int]]
+            the list containing the tuples of two integers encoding the start and end indeces
+            of each worker
+        """
+
+         # Check the user provided number of cores
+        if cores == -1:
+            cores = len(sched_getaffinity(0))
+        elif cores <= 0:
+            raise ValueError("Invalid number of cores selected.")
+
+        # Set up an equal division of the number of jobs to be assigned to each process
+        surplus = self.__number_of_simulations % cores
+        steps = int((self.__number_of_simulations - surplus) / cores)
+        start_points = [(i + 1) * steps for i in range(cores)]
+        start_points[-1] += surplus
+
+        # Generate the list of tasks to be performed by each process
+        schedule = []
+        for core in range(cores):
+            start = 0 if core == 0 else start_points[core - 1]
+            end = start_points[core]
+            schedule.append((start, end))
+
+        return schedule
+
+
+    def save_dataset(
         self,
         frequency: Union[List[float], numpy.ndarray],
         cores: int = -1,
@@ -530,34 +569,75 @@ class Generator:
         ValueError
             exception raised if the number of cores selected by the user is invalid
         """
-        # Check the user provided number of cores
-        if cores == -1:
-            cores = cpu_count()
-        elif cores <= 0:
-            raise ValueError("Invalid number of cores selected.")
 
         # Check if the folder indicated by the user exists, else create it
         if isdir(folder) == False:
             mkdir(folder)
         folder = abspath(folder)
 
-        # Set up an equal division of the number of jobs to be assigned to each process
-        surplus = self.__number_of_simulations % cores
-        steps = int((self.__number_of_simulations - surplus) / cores)
-        start_points = [(i + 1) * steps for i in range(cores)]
-        start_points[-1] += surplus
+        # Compute static scheduling
+        schedule = self.__generate_static_scheduling(cores)
 
         # Generate the list of tasks to be performed by each process
         tasks = []
         for core in range(cores):
-            start = 0 if core == 0 else start_points[core - 1]
-            end = start_points[core]
+            start, end = schedule[core]
             freq = frequency if type(frequency) == list else [f for f in frequency]
             tasks.append(Task(self, start, end, freq, basename, folder))
 
         # Run all the processes in parallel
         with Pool(processes=cores) as pool:
-            pool.map(job_engine, tasks)
+            pool.map(io_job_engine, tasks)
+    
+    def on_the_fly_dataset(
+        self,
+        frequency: Union[List[float], numpy.ndarray],
+        cores: int = -1,
+    ) -> List[DataPoint]:
+        """
+        Run all the simulations in parallel using a static scheduling and return the results
+        in the form of a numpy array containing the simulated complex impedance.
+
+        Parameters
+        ----------
+        frequency: Union[List[float], numpy.ndarray]
+            the list (or numpy array) containing the float frequency values at which the
+            circuit must be simulated
+        cores: int
+            the number of cores to be used by the simulation process. If set to `-1` (default)
+            will use all the cores available on the machine
+
+        Raises
+        ------
+        ValueError
+            exception raised if the number of cores selected by the user is invalid
+        
+        Returns
+        -------
+        List[DataPoint]
+            list of DataPoint objects ecoding all the simulations that have been run
+        """
+    
+        # Compute static scheduling
+        schedule = self.__generate_static_scheduling(cores)
+
+        # Generate the list of tasks to be performed by each process
+        tasks = []
+        for core in range(cores):
+            start, end = schedule[core]
+            freq = frequency if type(frequency) == list else [f for f in frequency]
+            tasks.append(Task(self, start, end, freq, None, None))
+
+        # Run all the processes in parallel
+        with Pool(processes=cores) as pool:
+            results = pool.map(ram_job_engine, tasks)
+        
+        dataset = []
+        for result in results:
+            for dp in result:
+                dataset.append(dp)
+        
+        return dataset
 
     @property
     def number_of_simulations(self) -> int:
@@ -628,7 +708,7 @@ class Task:
     folder: str
 
 
-def job_engine(task: Task):
+def io_job_engine(task: Task) -> None:
     """
     Runs all the simulations encoded by the selected simulation task and saves the data into
     a file.
@@ -646,3 +726,31 @@ def job_engine(task: Task):
         spectrum = EIS_Spectrum(np.array(task.frequency), Z)
         dp = DataPoint(DataOrigin.Real, equivalent_circuit=circuit, spectrum=spectrum)
         dp.save(f"{task.basename}_{idx}", folder=task.folder)
+
+
+def ram_job_engine(task: Task) -> List[DataPoint]:
+    """
+    Runs all the simulations encoded by the selected simulation task and returns a list of the
+    computed complex impedances
+
+    Parameters
+    ----------
+    task: Task
+        the dataclass encoding the simulation parameters
+
+    Returns
+    ------
+    List[DataPoint]
+        the list containing all the simulated EIS spectra
+    """
+    dataset = []
+    for i in range(task.end - task.start):
+        idx = task.start + i
+        params = task.gen.generate_parameterization(idx)
+        circuit = EquivalentCircuit(task.gen.circuit, parameters=params)
+        Z = circuit.simulate(task.frequency)
+        spectrum = EIS_Spectrum(np.array(task.frequency), Z)
+        dp = DataPoint(DataOrigin.Real, equivalent_circuit=circuit, spectrum=spectrum)
+        dataset.append(dp)
+    
+    return dataset
