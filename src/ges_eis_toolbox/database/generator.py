@@ -498,8 +498,8 @@ class Generator:
         return {
             key: val if len(val) != 1 else val[0] for key, val in parameter_list.items()
         }
-    
-    def __generate_static_scheduling(self, cores: int = -1) -> List[Tuple[int, int]]:
+
+    def __generate_static_scheduling(self, cores: int) -> List[Tuple[int, int]]:
         """
         Given a user defined number of cores, generate in a static scheduling fashion, a list
         of start and end points describing the workload boundary associated to each worker.
@@ -508,19 +508,13 @@ class Generator:
         ----------
         cores: int
             the number of cores used during the parallel computation
-        
+
         Returns
         -------
         List[Tuple[int, int]]
             the list containing the tuples of two integers encoding the start and end indeces
             of each worker
         """
-
-         # Check the user provided number of cores
-        if cores == -1:
-            cores = len(sched_getaffinity(0))
-        elif cores <= 0:
-            raise ValueError("Invalid number of cores selected.")
 
         # Set up an equal division of the number of jobs to be assigned to each process
         surplus = self.__number_of_simulations % cores
@@ -536,7 +530,6 @@ class Generator:
             schedule.append((start, end))
 
         return schedule
-
 
     def save_dataset(
         self,
@@ -575,6 +568,12 @@ class Generator:
             mkdir(folder)
         folder = abspath(folder)
 
+        # Check the user provided number of cores
+        if cores == -1:
+            cores = len(sched_getaffinity(0))
+        elif cores <= 0:
+            raise ValueError("Invalid number of cores selected.")
+
         # Compute static scheduling
         schedule = self.__generate_static_scheduling(cores)
 
@@ -588,7 +587,7 @@ class Generator:
         # Run all the processes in parallel
         with Pool(processes=cores) as pool:
             pool.map(io_job_engine, tasks)
-    
+
     def on_the_fly_dataset(
         self,
         frequency: Union[List[float], numpy.ndarray],
@@ -611,13 +610,19 @@ class Generator:
         ------
         ValueError
             exception raised if the number of cores selected by the user is invalid
-        
+
         Returns
         -------
         List[DataPoint]
             list of DataPoint objects ecoding all the simulations that have been run
         """
-    
+
+        # Check the user provided number of cores
+        if cores == -1:
+            cores = len(sched_getaffinity(0))
+        elif cores <= 0:
+            raise ValueError("Invalid number of cores selected.")
+
         # Compute static scheduling
         schedule = self.__generate_static_scheduling(cores)
 
@@ -631,12 +636,12 @@ class Generator:
         # Run all the processes in parallel
         with Pool(processes=cores) as pool:
             results = pool.map(ram_job_engine, tasks)
-        
+
         dataset = []
         for result in results:
             for dp in result:
                 dataset.append(dp)
-        
+
         return dataset
 
     @property
@@ -752,5 +757,5 @@ def ram_job_engine(task: Task) -> List[DataPoint]:
         spectrum = EIS_Spectrum(np.array(task.frequency), Z)
         dp = DataPoint(DataOrigin.Real, equivalent_circuit=circuit, spectrum=spectrum)
         dataset.append(dp)
-    
+
     return dataset
