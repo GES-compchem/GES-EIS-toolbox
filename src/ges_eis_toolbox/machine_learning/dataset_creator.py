@@ -157,7 +157,7 @@ class DatasetCreator:
                     Z = np.concatenate((Z_re, Z_im), axis=0)
 
                 if reshape_to_2D:
-                    Z = Z.reshape([freq_steps, 2])
+                    Z = Z.reshape([2, freq_steps])
 
                 X.append(Z)
 
