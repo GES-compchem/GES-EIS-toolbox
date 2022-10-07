@@ -76,7 +76,7 @@ def plot_dataset_bode(
     s = X.shape
 
     if len(s[1::]) == 1:
-        X = X.reshape([s[0], int(s[1] / 2), 2])
+        X = X.reshape([s[0], 2, int(s[1] / 2)])
 
     fig, (ax1, ax2) = plt.subplots(nrows=2)
 
@@ -132,7 +132,7 @@ def plot_dataset_nyquist(
     s = X.shape
 
     if len(s[1::]) == 1:
-        X = X.reshape([s[0], int(s[1] / 2), 2])
+        X = X.reshape([s[0], 2, int(s[1] / 2)])
 
     fig, ax = plt.subplots()
 

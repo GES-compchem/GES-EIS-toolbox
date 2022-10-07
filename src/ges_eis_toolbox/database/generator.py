@@ -3,12 +3,12 @@ from enum import Enum
 
 import numpy
 import numpy as np
-from os import mkdir, sched_getaffinity
+from os import mkdir
 from os.path import isdir, abspath
 from dataclasses import dataclass
 from math import factorial
 from typing import Any, Dict, List, Tuple, Union
-from multiprocessing import Pool
+from multiprocessing import Pool, cpu_count
 
 from ges_eis_toolbox.circuit.circuit_string import CircuitString
 from ges_eis_toolbox.circuit.equivalent_circuit import EquivalentCircuit
@@ -570,7 +570,7 @@ class Generator:
 
         # Check the user provided number of cores
         if cores == -1:
-            cores = len(sched_getaffinity(0))
+            cores = cpu_count()
         elif cores <= 0:
             raise ValueError("Invalid number of cores selected.")
 
@@ -619,7 +619,7 @@ class Generator:
 
         # Check the user provided number of cores
         if cores == -1:
-            cores = len(sched_getaffinity(0))
+            cores = cpu_count()
         elif cores <= 0:
             raise ValueError("Invalid number of cores selected.")
 

@@ -3,4 +3,6 @@ scipy
 matplotlib
 tensorflow
 keras
+pyyaml
+h5py
 impedance
