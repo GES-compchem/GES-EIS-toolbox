@@ -4,6 +4,8 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 COLORS = ["blue", "red", "green", "purple", "brown", "black"]
+LOSS_COLOR = "blue"
+ACCURACY_COLOR = "red"
 
 
 def plot_confusion_matrix(
@@ -174,7 +176,7 @@ def isolate_misclassified_examples(
         the label array associated to the X one
     with_logits: bool
         whether the output of the model is in logits form
-    
+
     Returns
     -------
     Tuple[np.ndarray, np.ndarray, np.ndarray]
@@ -198,3 +200,29 @@ def isolate_misclassified_examples(
 
     return np.array(X_miss), np.array(Y_miss), np.array(Yp_miss)
 
+
+def plot_history(history: dict):
+
+    fig, ax1 = plt.subplots()
+
+    ax1.plot(history["loss"], c=LOSS_COLOR)
+
+    ax1.set_xlabel("Epoch")
+    ax1.set_ylabel("Loss")
+
+    if "accuracy" in history:
+
+        ax1.spines["left"].set_color(LOSS_COLOR)
+        ax1.tick_params(axis="y", colors=LOSS_COLOR)
+        ax1.yaxis.label.set_color(LOSS_COLOR)
+
+        ax2 = ax1.twinx()
+        ax2.plot(history["accuracy"], c=ACCURACY_COLOR)
+
+        ax2.spines["right"].set_color(ACCURACY_COLOR)
+        ax2.tick_params(axis="y", colors=ACCURACY_COLOR)
+        ax2.yaxis.label.set_color(ACCURACY_COLOR)
+        ax2.set_ylabel(ACCURACY_COLOR)
+
+    plt.tight_layout()
+    plt.show()
