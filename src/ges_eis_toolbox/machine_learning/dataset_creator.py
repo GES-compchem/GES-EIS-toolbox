@@ -21,8 +21,8 @@ class DatasetCreator:
     cores: int
         the number of cores to use during the parallel section of the simulation procedure. If
         set to -1 will use all the cores available on the machine.
-
     """
+
     def __init__(self, verbose: bool = True, cores: int = -1) -> None:
 
         self.__verbose = verbose
@@ -46,7 +46,7 @@ class DatasetCreator:
         ranges: Dict[str, Dict[str, Range]]
             the list of ranges associated to each component block type
         """
-        
+
         self.__X_train, self.__X_test = None, None
         self.__y_train, self.__y_test = None, None
         self.__circuits.append(circuit_string)
@@ -60,7 +60,7 @@ class DatasetCreator:
         steps_limit: int = 10,
         equalize: bool = True,
         reshape_to_2D: bool = True,
-        polar_form: bool = True
+        polar_form: bool = True,
     ) -> None:
         """
         Generates the training and test datasets.
@@ -73,7 +73,7 @@ class DatasetCreator:
             the relative fraction of the dataset to be used in the training set
         simulation_limit: int
             sets the maximum number of simulations to be executed by the code (default: 1e+6).
-            Please notice how this is different from the real number of simulations that is 
+            Please notice how this is different from the real number of simulations that is
             instead computed based on the circuit structure.
         steps_limit: Union[int, None]
             sets the maximum number of steps for each degree of freedom to be explored in the
@@ -119,7 +119,6 @@ class DatasetCreator:
 
         # If equalize is true find the minimum length of the single-circuit dataset, randomize the
         # individual ordering and cut each dataset to the same length
-
         if equalize:
 
             min_length = min([len(dp_list) for dp_list in data_points_list])
@@ -136,7 +135,6 @@ class DatasetCreator:
 
         # Cycle over each set of single-circuit datapoints, extract the spectral data and put
         # them in a list of single-circuit datasets to be used for the machine learning reshaping
-
         if self.__verbose:
             print("Generating the training examples by category")
 
@@ -146,7 +144,7 @@ class DatasetCreator:
             X = []
 
             for dp in dp_list:
-                
+
                 if polar_form:
                     Z_mod = dp.spectrum.norm_Z
                     Z_phi = dp.spectrum.phi_Z
@@ -200,7 +198,7 @@ class DatasetCreator:
             print("  -> Test set shape:")
             print(f"    X: {self.__X_test.shape}")
             print(f"    y: {self.__y_test.shape}")
-    
+
     @property
     def training_set(self) -> Tuple[np.ndarray, np.ndarray]:
         """
@@ -212,7 +210,7 @@ class DatasetCreator:
             the training set in the form of the feature array and the label array
         """
         return self.__X_train, self.__y_train
-    
+
     @property
     def test_set(self) -> Tuple[np.ndarray, np.ndarray]:
         """
@@ -224,7 +222,7 @@ class DatasetCreator:
             the test set in the form of the feature array and the label array
         """
         return self.__X_test, self.__y_test
-    
+
     @property
     def number_of_classes(self) -> int:
         """

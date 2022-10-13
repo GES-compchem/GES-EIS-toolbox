@@ -42,9 +42,13 @@ def plot_confusion_matrix(
     mat = plt.matshow(cm, cmap="Blues")
     for (i, j), z in np.ndenumerate(cm):
         plt.text(j, i, "{:d}".format(z), ha="center", va="center")
-
+    
+    plt.xlabel("Predicted label")
+    plt.ylabel("Real label")
+    
     plt.colorbar(mat)
 
+    plt.tight_layout()
     plt.show()
 
 
@@ -65,14 +69,15 @@ def plot_dataset_bode(
     Y: np.ndarray
         lables array containing the class to which a given circuit belongs to
     only_label: int
-        if set to a value different from None (default) will plot only the traces referred to the indicated
-        lable class
+        if set to a value different from None (default) will plot only the traces referred 
+        to the indicated lable class
     is_polar: bool
-        if set to True (default) assumes the data to be composed by magnitude and phase of the impedance
-        else will expect a feature vector containing the real an immaginary part of the impedance
+        if set to True (default) assumes the data to be composed by magnitude and phase of 
+        the impedance else will expect a feature vector containing the real an immaginary 
+        part of the impedance
     label_based_colors: bool
-        if set to True uses a different color for each class type else, if set to False (default) will
-        use a single color to represent all the data
+        if set to True uses a different color for each class type else, if set to False 
+        (default) will use a single color to represent all the data
     """
 
     s = X.shape
@@ -90,16 +95,22 @@ def plot_dataset_bode(
         color = COLORS[y % len(COLORS)] if label_based_colors else "blue"
 
         if is_polar:
-            ax1.plot(x[0, :], c=color, alpha=0.2)
-            ax2.plot(-x[1, :], c=color, alpha=0.2)
+            ax1.plot(x[0, :], c=color, alpha=0.2, label=y)
+            ax2.plot(-x[1, :], c=color, alpha=0.2, label=y)
         else:
             Z = x[0, :] + 1j * x[1, :]
-            ax1.plot(np.absolute(Z), c=color, alpha=0.2)
-            ax2.plot(-np.angle(Z), c=color, alpha=0.2)
+            ax1.plot(np.absolute(Z), c=color, alpha=0.2, label=y)
+            ax2.plot(-np.angle(Z), c=color, alpha=0.2, label=y)
 
     ax1.set_ylabel("|Z|")
     ax2.set_ylabel(r"$-\varphi$")
     ax2.set_xlabel("index")
+
+    if label_based_colors:
+        handles, labels = plt.gca().get_legend_handles_labels()
+        by_label = dict(zip(labels, handles))
+        ax1.legend(by_label.values(), by_label.keys())
+        ax2.legend(by_label.values(), by_label.keys())
 
     plt.show()
 
@@ -121,14 +132,15 @@ def plot_dataset_nyquist(
     Y: np.ndarray
         lables array containing the class to which a given circuit belongs to
     only_label: int
-        if set to a value different from None (default) will plot only the traces referred to the indicated
-        lable class
+        if set to a value different from None (default) will plot only the traces referred 
+        to the indicated lable class
     is_polar: bool
-        if set to True (default) assumes the data to be composed by magnitude and phase of the impedance
-        else will expect a feature vector containing the real an immaginary part of the impedance
+        if set to True (default) assumes the data to be composed by magnitude and phase of 
+        the impedance else will expect a feature vector containing the real an immaginary 
+        part of the impedance
     label_based_colors: bool
-        if set to True uses a different color for each class type else, if set to False (default) will
-        use a single color to represent all the data
+        if set to True uses a different color for each class type else, if set to False 
+        (default) will use a single color to represent all the data
     """
 
     s = X.shape
@@ -137,7 +149,7 @@ def plot_dataset_nyquist(
         X = X.reshape([s[0], 2, int(s[1] / 2)])
 
     fig, ax = plt.subplots()
-
+    
     for x, y in zip(X, Y):
 
         if y != only_label and only_label is not None:
@@ -147,12 +159,18 @@ def plot_dataset_nyquist(
 
         if is_polar:
             Z = x[0, :] * np.exp(1j * x[1, :])
-            ax.plot(np.real(Z), -np.imag(Z), c=color, alpha=0.2)
+            ax.plot(np.real(Z), -np.imag(Z), c=color, alpha=0.2, label=y)
+            
         else:
-            ax.plot(x[0, :], -x[1, :], c=color, alpha=0.2)
+            ax.plot(x[0, :], -x[1, :], c=color, alpha=0.2, label=y)
 
     ax.set_ylabel("-Im(Z)")
     ax.set_xlabel("Re(Z)")
+
+    if label_based_colors:
+        handles, labels = plt.gca().get_legend_handles_labels()
+        by_label = dict(zip(labels, handles))
+        plt.legend(by_label.values(), by_label.keys())
 
     plt.show()
 
@@ -201,8 +219,18 @@ def isolate_misclassified_examples(
     return np.array(X_miss), np.array(Y_miss), np.array(Yp_miss)
 
 
-def plot_history(history: dict):
+def plot_history(history: dict) -> None:
+    """
+    Plot the convergence history of the model training
 
+    Parameters
+    ----------
+    history: dict
+        the dictionary containing the history of the algorithm training. The dictionary should
+        contain, as a minimum requirement, the list of loss function values corresponding to
+        the "loss" key. If also the "accuracy" key is present a secondary y-axis will be used
+        to represent it.
+    """
     fig, ax1 = plt.subplots()
 
     ax1.plot(history["loss"], c=LOSS_COLOR)
