@@ -175,6 +175,69 @@ def plot_dataset_nyquist(
     plt.show()
 
 
+def plot_dataset_cartesian(
+    X: np.ndarray,
+    Y: np.ndarray,
+    only_label: int = None,
+    is_polar: bool = True,
+    label_based_colors: bool = False,
+) -> None:
+    """
+    Generate the Bode plot of all the data in a given dataset.
+
+    Parameters
+    ----------
+    X: np.ndarray
+        features array containing the impedance data
+    Y: np.ndarray
+        lables array containing the class to which a given circuit belongs to
+    only_label: int
+        if set to a value different from None (default) will plot only the traces referred 
+        to the indicated lable class
+    is_polar: bool
+        if set to True (default) assumes the data to be composed by magnitude and phase of 
+        the impedance else will expect a feature vector containing the real an immaginary 
+        part of the impedance
+    label_based_colors: bool
+        if set to True uses a different color for each class type else, if set to False 
+        (default) will use a single color to represent all the data
+    """
+
+    s = X.shape
+
+    if len(s[1::]) == 1:
+        X = X.reshape([s[0], 2, int(s[1] / 2)])
+
+    fig, (ax1, ax2) = plt.subplots(nrows=2)
+
+    for x, y in zip(X, Y):
+
+        if y != only_label and only_label is not None:
+            continue
+
+        color = COLORS[y % len(COLORS)] if label_based_colors else "blue"
+
+        if is_polar:
+            Z = x[0, :]*np.exp(1j*x[1, :])
+            ax1.plot(Z.real, c=color, alpha=0.2, label=y)
+            ax2.plot(Z.imag, c=color, alpha=0.2, label=y)
+        else:
+            ax1.plot(x[0, :], c=color, alpha=0.2, label=y)
+            ax2.plot(x[1, :], c=color, alpha=0.2, label=y)
+
+    ax1.set_ylabel("Re(Z)")
+    ax2.set_ylabel("Im(z)")
+    ax2.set_xlabel("index")
+
+    if label_based_colors:
+        handles, labels = plt.gca().get_legend_handles_labels()
+        by_label = dict(zip(labels, handles))
+        ax1.legend(by_label.values(), by_label.keys())
+        ax2.legend(by_label.values(), by_label.keys())
+
+    plt.show()
+
+
 def isolate_misclassified_examples(
     model: tf.keras.models.Sequential,
     X: np.ndarray,

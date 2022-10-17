@@ -1,4 +1,4 @@
-import random
+import random, warnings
 import numpy as np
 
 from copy import deepcopy
@@ -46,9 +46,8 @@ class DatasetCreator:
         ranges: Dict[str, Dict[str, Range]]
             the list of ranges associated to each component block type
         """
-
-        self.__X_train, self.__X_test = None, None
-        self.__y_train, self.__y_test = None, None
+        self.__split = None
+        self.__X, self.__y = None, None
         self.__circuits.append(circuit_string)
         self.__ranges.append(ranges)
 
@@ -61,9 +60,10 @@ class DatasetCreator:
         equalize: bool = True,
         reshape_to_2D: bool = True,
         polar_form: bool = True,
+        scramble_dataset: bool = True,
     ) -> None:
         """
-        Generates the training and test datasets.
+        Generates the dataset.
 
         Parameters
         ----------
@@ -80,18 +80,38 @@ class DatasetCreator:
             simulation. If set to None, will leave the step number free to approach the value
             that better fits the `simulation_limit` parameter.
         equalize: bool
-            if set to True (default), will randomize and cut all the single circuits datasets in order
-            to have a balanced dataset in which all the circuit types are equally represented.
+            if set to True (default), will randomize and cut all the single circuits datasets
+            in order to have a balanced dataset in which all the circuit types are equally represented.
         reshape_to_2D: bool
-            if set to True (default), will reshape the output dataset to a 2D array having the impedance
-            modulus as the first row and the phase as the second one. If set to False the first
-            half of the feature vector will be the modulus of the impedance while the second half
-            its phase.
+            if set to True (default), will reshape the output dataset to a 2D array having
+            the impedance modulus as the first row and the phase as the second one. If set
+            to False the first half of the feature vector will be the modulus of the impedance
+            while the second half its phase.
         polar_form: bool
-            if set to True (default), will represent the impedance spectrum as modulus and phase
-            else will adopt the real and imaginary part representation of the spectrum
-
+            if set to True (default), will represent the impedance spectrum as modulus and
+            phase else will adopt the real and imaginary part representation of the spectrum
+        scramble_dataset: bool
+            if set to True (default), will automatically scramble the generate dataset before
+            splitting it in training and test datasets.
         """
+
+        if split_ratio > 0.0 and split_ratio < 1.0:
+            self.__split = split_ratio
+        else:
+            raise ValueError(
+                "The split ratio must be a float number in the range form 0 to 1 (excluded)"
+            )
+
+        # Print a warning to the user if the scramble_dataset warning is set to false
+        if scramble_dataset is False:
+            warnings.warn(
+                """The 'scramble_dataset' option has been set to 'False'. This will return a dataset ordered by label and generation sequence. Please consider this before using this dataset for training and validation."""
+            )
+
+            if equalize:
+                warnings.warn(
+                    """The 'scramble_dataset' option has been set to 'False' while the equalize flag has been set to 'True'. This will result in a partial scambling of the examples with the same label."""
+                )
 
         # Extract the length of the input dataset
         freq_steps = len(frequency)
@@ -100,7 +120,7 @@ class DatasetCreator:
         data_points_list: List[List[DataPoint]] = []
 
         if self.__verbose:
-            print("Starting generation of the single-circuit datasets")
+            print("\nStarting generation of the single-circuit datasets")
 
         for cs, ranges in zip(self.__circuits, self.__ranges):
 
@@ -126,6 +146,7 @@ class DatasetCreator:
             if self.__verbose:
                 print("Running equalization of the single-circuits datasets")
                 print(f" -> Minimum number of datapoints: {min_length}")
+                print("")
 
             buffer = deepcopy(data_points_list)
             data_points_list = []
@@ -166,38 +187,43 @@ class DatasetCreator:
         # set the training and validation sets according to the defined split ratio
         X = np.concatenate(X_list, axis=0)
         Y = np.concatenate(y_list, axis=0)
-        N_samples = len(Y)
 
-        index_list = [i for i, _ in enumerate(Y)]
-        random.shuffle(index_list)
+        if scramble_dataset:
 
-        X_random, Y_random = [], []
-        for index in index_list:
-            X_random.append(X[index])
-            Y_random.append(Y[index])
+            if self.__verbose:
+                print(" -> Scrambing the dataset")
 
-        if self.__verbose:
-            print("Splitting the dataset in training and test sets")
+            index_list = [i for i, _ in enumerate(Y)]
+            random.shuffle(index_list)
 
-        split = int(split_ratio * N_samples)
+            X_random, Y_random = [], []
+            for index in index_list:
+                X_random.append(X[index])
+                Y_random.append(Y[index])
 
-        self.__X_train, self.__y_train = np.array(X_random[0:split]), np.array(
-            Y_random[0:split]
-        )
+            X = np.array(X_random)
+            Y = np.array(Y_random)
 
-        if self.__verbose:
-            print("  -> Training set shape:")
-            print(f"    X: {self.__X_train.shape}")
-            print(f"    y: {self.__y_train.shape}")
-
-        self.__X_test, self.__y_test = np.array(X_random[split::]), np.array(
-            Y_random[split::]
-        )
+        self.__X = X
+        self.__y = Y
 
         if self.__verbose:
-            print("  -> Test set shape:")
-            print(f"    X: {self.__X_test.shape}")
-            print(f"    y: {self.__y_test.shape}")
+            print(" -> Dataset shape:")
+            print(f"    X: {self.__X.shape}")
+            print(f"    y: {self.__y.shape}")
+            print("")
+
+    @property
+    def complete_dataset(self) -> Tuple[np.ndarray, np.ndarray]:
+        """
+        Returns the complete set genrated during the call to the generate function.
+
+        Returns
+        -------
+        Tuple[np.ndarray, np.ndarray]
+            the complete dataset in the form of the feature array and the label array
+        """
+        return self.__X, self.__y
 
     @property
     def training_set(self) -> Tuple[np.ndarray, np.ndarray]:
@@ -209,7 +235,8 @@ class DatasetCreator:
         Tuple[np.ndarray, np.ndarray]
             the training set in the form of the feature array and the label array
         """
-        return self.__X_train, self.__y_train
+        split = int(self.__split * len(self.__y))
+        return np.array(self.__X[0:split]), np.array(self.__y[0:split])
 
     @property
     def test_set(self) -> Tuple[np.ndarray, np.ndarray]:
@@ -221,7 +248,8 @@ class DatasetCreator:
         Tuple[np.ndarray, np.ndarray]
             the test set in the form of the feature array and the label array
         """
-        return self.__X_test, self.__y_test
+        split = int(self.__split * len(self.__y))
+        return np.array(self.__X[split::]), np.array(self.__y[split::])
 
     @property
     def number_of_classes(self) -> int:
