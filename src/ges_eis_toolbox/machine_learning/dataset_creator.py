@@ -22,7 +22,6 @@ class DatasetCreator:
         the number of cores to use during the parallel section of the simulation procedure. If
         set to -1 will use all the cores available on the machine.
     """
-
     def __init__(self, verbose: bool = True, cores: int = -1) -> None:
 
         self.__verbose = verbose
@@ -30,8 +29,8 @@ class DatasetCreator:
 
         self.__circuits = []
         self.__ranges = []
-        self.__X_train, self.__X_test = None, None
-        self.__y_train, self.__y_test = None, None
+        self.__split = None
+        self.__X, self.__y = None, None  
 
     def add(
         self, circuit_string: CircuitString, ranges: Dict[str, Dict[str, Range]]
@@ -46,7 +45,6 @@ class DatasetCreator:
         ranges: Dict[str, Dict[str, Range]]
             the list of ranges associated to each component block type
         """
-        self.__split = None
         self.__X, self.__y = None, None
         self.__circuits.append(circuit_string)
         self.__ranges.append(ranges)
