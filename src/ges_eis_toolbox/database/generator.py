@@ -1,4 +1,5 @@
 from __future__ import annotations
+from enum import Enum
 
 import numpy
 import numpy as np
@@ -6,13 +7,19 @@ from os import mkdir
 from os.path import isdir, abspath
 from dataclasses import dataclass
 from math import factorial
-from typing import Any, Dict, List, Union
+from typing import Any, Dict, List, Tuple, Union
 from multiprocessing import Pool, cpu_count
 
 from ges_eis_toolbox.circuit.circuit_string import CircuitString
 from ges_eis_toolbox.circuit.equivalent_circuit import EquivalentCircuit
 from ges_eis_toolbox.spectra.spectrum import EIS_Spectrum
 from ges_eis_toolbox.database.data_entry import DataPoint, DataOrigin
+
+
+class SamplingMode(Enum):
+
+    linear = "linear"
+    logarithmic = "logarithmic"
 
 
 class Range:
@@ -138,7 +145,21 @@ class Range:
         """
         return [x - y for x, y in zip(self.__max, self.__min)]
 
-    def generate_step(self, index: List[int], steps: int):
+    def __linear_step(self, index: List[int], steps: int) -> List[float]:
+        return [
+            min + delta * i / (steps - 1)
+            for min, delta, i in zip(self.min, self.delta, index)
+        ]
+
+    def __logarithmic_step(self, index: List[int], steps: int) -> List[float]:
+        return [
+            min * ((max / min) ** (i / (steps - 1)))
+            for min, max, i in zip(self.min, self.max, index)
+        ]
+
+    def generate_step(
+        self, index: List[int], steps: int, scheme: SamplingMode
+    ) -> List[float]:
         """
         Given the homogeneous subdivision of the range in `steps` parts, comutes the values of
         grid associated the point described by the list of indeces provided as the `index` variable
@@ -150,7 +171,8 @@ class Range:
             space
         steps: int
             the number of steps in which each dimension of the range is subdivided
-
+        scheme: SamplingMode
+            the type of sampling scheme adopted (options: `linear` or `logarithmic`)
         Raises
         ------
         ValueError
@@ -171,10 +193,12 @@ class Range:
                     "The 'index' parameter must be a non-negative integer smaller than 'steps'"
                 )
 
-        return [
-            min + delta * i / (steps - 1)
-            for min, delta, i in zip(self.min, self.delta, index)
-        ]
+        if scheme == SamplingMode.linear:
+            return self.__linear_step(index, steps)
+        elif scheme == SamplingMode.logarithmic:
+            return self.__logarithmic_step(index, steps)
+        else:
+            raise ValueError(f"'{scheme}' is not a valid sampling scheme")
 
 
 class Generator:
@@ -218,6 +242,7 @@ class Generator:
         ranges: Dict[str, Dict[str, Range]],
         simulation_limit: int = 1000000,
         steps_limit: Union[int, None] = None,
+        sampling_scheme: SamplingMode = SamplingMode.logarithmic,
     ) -> None:
 
         if type(circuit) != CircuitString:
@@ -230,6 +255,7 @@ class Generator:
             raise ValueError("Key mismatch between circuit base groups and 'ranges'.")
 
         self.__ranges = ranges
+        self.__sampling_scheme = sampling_scheme
 
         steps = 1
         while True:
@@ -465,13 +491,47 @@ class Generator:
                         )
 
                     component_range = self.__ranges[block][base_component]
-                    parameter_list[key] = component_range.generate_step(value, self.__steps)
+                    parameter_list[key] = component_range.generate_step(
+                        value, self.__steps, self.__sampling_scheme
+                    )
 
         return {
             key: val if len(val) != 1 else val[0] for key, val in parameter_list.items()
         }
 
-    def run(
+    def __generate_static_scheduling(self, cores: int) -> List[Tuple[int, int]]:
+        """
+        Given a user defined number of cores, generate in a static scheduling fashion, a list
+        of start and end points describing the workload boundary associated to each worker.
+
+        Parameters
+        ----------
+        cores: int
+            the number of cores used during the parallel computation
+
+        Returns
+        -------
+        List[Tuple[int, int]]
+            the list containing the tuples of two integers encoding the start and end indeces
+            of each worker
+        """
+
+        # Set up an equal division of the number of jobs to be assigned to each process
+        surplus = self.__number_of_simulations % cores
+        steps = int((self.__number_of_simulations - surplus) / cores)
+        start_points = [(i + 1) * steps for i in range(cores)]
+        start_points[-1] += surplus
+
+        # Generate the list of tasks to be performed by each process
+        schedule = []
+        for core in range(cores):
+            start = 0 if core == 0 else start_points[core - 1]
+            end = start_points[core]
+            schedule.append((start, end))
+
+        return schedule
+
+    def save_dataset(
         self,
         frequency: Union[List[float], numpy.ndarray],
         cores: int = -1,
@@ -502,34 +562,87 @@ class Generator:
         ValueError
             exception raised if the number of cores selected by the user is invalid
         """
-        # Check the user provided number of cores
-        if cores == -1:
-            cores = cpu_count()
-        elif cores <= 0:
-            raise ValueError("Invalid number of cores selected.")
 
         # Check if the folder indicated by the user exists, else create it
         if isdir(folder) == False:
             mkdir(folder)
         folder = abspath(folder)
 
-        # Set up an equal division of the number of jobs to be assigned to each process
-        surplus = self.__number_of_simulations % cores
-        steps = int((self.__number_of_simulations - surplus) / cores)
-        start_points = [(i + 1) * steps for i in range(cores)]
-        start_points[-1] += surplus
+        # Check the user provided number of cores
+        if cores == -1:
+            cores = cpu_count()
+        elif cores <= 0:
+            raise ValueError("Invalid number of cores selected.")
+
+        # Compute static scheduling
+        schedule = self.__generate_static_scheduling(cores)
 
         # Generate the list of tasks to be performed by each process
         tasks = []
         for core in range(cores):
-            start = 0 if core == 0 else start_points[core - 1]
-            end = start_points[core]
+            start, end = schedule[core]
             freq = frequency if type(frequency) == list else [f for f in frequency]
             tasks.append(Task(self, start, end, freq, basename, folder))
 
         # Run all the processes in parallel
         with Pool(processes=cores) as pool:
-            pool.map(job_engine, tasks)
+            pool.map(io_job_engine, tasks)
+
+    def on_the_fly_dataset(
+        self,
+        frequency: Union[List[float], numpy.ndarray],
+        cores: int = -1,
+    ) -> List[DataPoint]:
+        """
+        Run all the simulations in parallel using a static scheduling and return the results
+        in the form of a numpy array containing the simulated complex impedance.
+
+        Parameters
+        ----------
+        frequency: Union[List[float], numpy.ndarray]
+            the list (or numpy array) containing the float frequency values at which the
+            circuit must be simulated
+        cores: int
+            the number of cores to be used by the simulation process. If set to `-1` (default)
+            will use all the cores available on the machine
+
+        Raises
+        ------
+        ValueError
+            exception raised if the number of cores selected by the user is invalid
+
+        Returns
+        -------
+        List[DataPoint]
+            list of DataPoint objects ecoding all the simulations that have been run
+        """
+
+        # Check the user provided number of cores
+        if cores == -1:
+            cores = cpu_count()
+        elif cores <= 0:
+            raise ValueError("Invalid number of cores selected.")
+
+        # Compute static scheduling
+        schedule = self.__generate_static_scheduling(cores)
+
+        # Generate the list of tasks to be performed by each process
+        tasks = []
+        for core in range(cores):
+            start, end = schedule[core]
+            freq = frequency if type(frequency) == list else [f for f in frequency]
+            tasks.append(Task(self, start, end, freq, None, None))
+
+        # Run all the processes in parallel
+        with Pool(processes=cores) as pool:
+            results = pool.map(ram_job_engine, tasks)
+
+        dataset = []
+        for result in results:
+            for dp in result:
+                dataset.append(dp)
+
+        return dataset
 
     @property
     def number_of_simulations(self) -> int:
@@ -600,7 +713,7 @@ class Task:
     folder: str
 
 
-def job_engine(task: Task):
+def io_job_engine(task: Task) -> None:
     """
     Runs all the simulations encoded by the selected simulation task and saves the data into
     a file.
@@ -618,3 +731,31 @@ def job_engine(task: Task):
         spectrum = EIS_Spectrum(np.array(task.frequency), Z)
         dp = DataPoint(DataOrigin.Real, equivalent_circuit=circuit, spectrum=spectrum)
         dp.save(f"{task.basename}_{idx}", folder=task.folder)
+
+
+def ram_job_engine(task: Task) -> List[DataPoint]:
+    """
+    Runs all the simulations encoded by the selected simulation task and returns a list of the
+    computed complex impedances
+
+    Parameters
+    ----------
+    task: Task
+        the dataclass encoding the simulation parameters
+
+    Returns
+    ------
+    List[DataPoint]
+        the list containing all the simulated EIS spectra
+    """
+    dataset = []
+    for i in range(task.end - task.start):
+        idx = task.start + i
+        params = task.gen.generate_parameterization(idx)
+        circuit = EquivalentCircuit(task.gen.circuit, parameters=params)
+        Z = circuit.simulate(task.frequency)
+        spectrum = EIS_Spectrum(np.array(task.frequency), Z)
+        dp = DataPoint(DataOrigin.Real, equivalent_circuit=circuit, spectrum=spectrum)
+        dataset.append(dp)
+
+    return dataset
