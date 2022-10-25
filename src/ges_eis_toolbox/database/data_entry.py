@@ -16,6 +16,9 @@ from ges_eis_toolbox.database.experiment import Instrument
 
 
 class DataOrigin(Enum):
+    """
+    Enumeration containing the possible source of data: `Real` and `Simulation_noiseless`
+    """
     Real = "REAL"
     Simulation_noiseless = "NOISELESS_SIMULATION"
 

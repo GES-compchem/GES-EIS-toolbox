@@ -9,14 +9,14 @@ _VALID_COMPONENTS = ("C", "CPE", "G", "Gs", "K", "L", "La", "R", "T", "TLMQ", "W
 class CircuitString:
     """
     Class to store the properties of the string representation of an EIS equivalent circuit
-    according to the convention adopted in the impedance.py library. The class implements the
+    according to the convention adopted in the `impedance.py` library. The class implements the
     basic manupulation functions to decompose, compare and analyze the circuit properties.
     The class implements a `__str__` and a `__repr__` methods returning the content of the string.
     The class also implements the `__add__` and `__iadd__` operations to concatenate other circuit
     string representations.
 
-    Argument
-    --------
+    Arguments
+    ---------
     string: str
         the string representing the EIS equivalent circuit
     validate: bool
