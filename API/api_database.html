@@ -1,0 +1,785 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+    <title>The ges-eis-toolbox.database module &#8212; GES-EIS-toolbox Documentation</title>
+    
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../_static/styles/theme.css?digest=1999514e3f237ded88cf" rel="stylesheet">
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=1999514e3f237ded88cf" rel="stylesheet">
+
+    
+  <link rel="stylesheet"
+    href="../_static/vendor/fontawesome/5.13.0/css/all.min.css">
+  <link rel="preload" as="font" type="font/woff2" crossorigin
+    href="../_static/vendor/fontawesome/5.13.0/webfonts/fa-solid-900.woff2">
+  <link rel="preload" as="font" type="font/woff2" crossorigin
+    href="../_static/vendor/fontawesome/5.13.0/webfonts/fa-brands-400.woff2">
+
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/togglebutton.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/copybutton.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/mystnb.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinx-thebe.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/design-style.b7bb847fb20b106c3d81b95245e65545.min.css" />
+    
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=1999514e3f237ded88cf">
+
+    <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <script src="../_static/clipboard.min.js"></script>
+    <script src="../_static/copybutton.js"></script>
+    <script src="../_static/scripts/sphinx-book-theme.js?digest=9c920249402e914e316237a7dbc6769907cce411"></script>
+    <script>let toggleHintShow = 'Click to show';</script>
+    <script>let toggleHintHide = 'Click to hide';</script>
+    <script>let toggleOpenOnPrint = 'true';</script>
+    <script src="../_static/togglebutton.js"></script>
+    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown, .tag_hide_input div.cell_input, .tag_hide-input div.cell_input, .tag_hide_output div.cell_output, .tag_hide-output div.cell_output, .tag_hide_cell.cell, .tag_hide-cell.cell';</script>
+    <script src="../_static/design-tabs.js"></script>
+    <script>const THEBE_JS_URL = "https://unpkg.com/thebe@0.8.2/lib/index.js"
+const thebe_selector = ".thebe,.cell"
+const thebe_selector_input = "pre"
+const thebe_selector_output = ".output, .cell_output"
+</script>
+    <script async="async" src="../_static/sphinx-thebe.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="The ges-eis-toolbox.machine_learning module" href="api_machine_learning.html" />
+    <link rel="prev" title="The ges-eis-toolbox.circuit module" href="api_circuit.html" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="docsearch:language" content="None">
+    
+
+    <!-- Google Analytics -->
+    
+  </head>
+  <body data-spy="scroll" data-target="#bd-toc-nav" data-offset="60">
+    
+    <div class="container-fluid" id="banner"></div>
+
+    
+    <nav class="navbar navbar-light navbar-expand-lg bg-light fixed-top bd-navbar" id="navbar-main"><div class="container-xl">
+
+  <div id="navbar-start">
+    
+    
+<a class="navbar-brand" href="../intro.html">
+<p class="title">Python</p>
+</a>
+
+    
+  </div>
+
+  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbar-collapsible" aria-controls="navbar-collapsible" aria-expanded="false" aria-label="Toggle navigation">
+    <span class="navbar-toggler-icon"></span>
+  </button>
+
+  
+  <div id="navbar-collapsible" class="col-lg-9 collapse navbar-collapse">
+    <div id="navbar-center" class="mr-auto">
+      
+      <div class="navbar-center-item">
+        <ul id="navbar-main-elements" class="navbar-nav">
+    <li class="toctree-l1 current active nav-item">
+ <a class="reference internal nav-link" href="../api.html">
+  API Documentation
+ </a>
+</li>
+
+    
+</ul>
+      </div>
+      
+    </div>
+
+    <div id="navbar-end">
+      
+      <div class="navbar-end-item">
+        <ul id="navbar-icon-links" class="navbar-nav" aria-label="Icon Links">
+      </ul>
+      </div>
+      
+    </div>
+  </div>
+</div>
+    </nav>
+    
+
+    <div class="container-xl">
+      <div class="row">
+          
+            
+            <!-- Only show if we have sidebars configured, else just a small margin  -->
+            <div class="col-12 col-md-3 bd-sidebar">
+              <div class="sidebar-start-items"><form class="bd-search d-flex align-items-center" action="../search.html" method="get">
+  <i class="icon fas fa-search"></i>
+  <input type="search" class="form-control" name="q" id="search-input" placeholder="Search this book..." aria-label="Search this book..." autocomplete="off" >
+</form><nav class="bd-links" id="bd-docs-nav" aria-label="Main navigation">
+  <div class="bd-toc-item active">
+    <ul class="current nav bd-sidenav">
+ <li class="toctree-l1">
+  <a class="reference internal" href="api_circuit.html">
+   The
+   <code class="docutils literal notranslate">
+    <span class="pre">
+     ges-eis-toolbox.circuit
+    </span>
+   </code>
+   module
+  </a>
+ </li>
+ <li class="toctree-l1 current active">
+  <a class="current reference internal" href="#">
+   The
+   <code class="docutils literal notranslate">
+    <span class="pre">
+     ges-eis-toolbox.database
+    </span>
+   </code>
+   module
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="api_machine_learning.html">
+   The
+   <code class="docutils literal notranslate">
+    <span class="pre">
+     ges-eis-toolbox.machine_learning
+    </span>
+   </code>
+   module
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="api_spectra.html">
+   The
+   <code class="docutils literal notranslate">
+    <span class="pre">
+     ges-eis-toolbox.spectra
+    </span>
+   </code>
+   module
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="api_utils_and_exceptions.html">
+   The
+   <code class="docutils literal notranslate">
+    <span class="pre">
+     ges-eis-toolbox.utils
+    </span>
+   </code>
+   module
+  </a>
+ </li>
+</ul>
+
+  </div>
+</nav>
+              </div>
+              <div class="sidebar-end-items">
+              </div>
+            </div>
+            
+          
+
+          
+          <div class="d-none d-xl-block col-xl-2 bd-toc">
+            
+              
+              <div class="toc-item">
+                
+<div class="tocsection onthispage mt-5 pt-1 pb-3">
+    <i class="fas fa-list"></i> On this page
+</div>
+
+<nav id="bd-toc-nav">
+    <ul class="visible nav section-nav flex-column">
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#module-ges_eis_toolbox.database.data_entry">
+   The
+   <code class="docutils literal notranslate">
+    <span class="pre">
+     data_entry
+    </span>
+   </code>
+   submodule
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#module-ges_eis_toolbox.database.experiment">
+   The
+   <code class="docutils literal notranslate">
+    <span class="pre">
+     experiment
+    </span>
+   </code>
+   submodule
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#module-ges_eis_toolbox.database.generator">
+   The
+   <code class="docutils literal notranslate">
+    <span class="pre">
+     generator
+    </span>
+   </code>
+   submodule
+  </a>
+ </li>
+</ul>
+
+</nav>
+              </div>
+              
+              <div class="toc-item">
+                
+              </div>
+              
+            
+          </div>
+          
+
+          
+          
+            
+          
+          <main class="col-12 col-md-9 col-xl-7 py-md-5 pl-md-5 pr-md-4 bd-content" role="main">
+              
+              <div>
+                
+  <section class="tex2jax_ignore mathjax_ignore" id="the-ges-eis-toolbox-database-module">
+<span id="api-database"></span><h1>The <code class="docutils literal notranslate"><span class="pre">ges-eis-toolbox.database</span></code> module<a class="headerlink" href="#the-ges-eis-toolbox-database-module" title="Permalink to this headline">#</a></h1>
+<section id="module-ges_eis_toolbox.database.data_entry">
+<span id="the-data-entry-submodule"></span><h2>The <code class="docutils literal notranslate"><span class="pre">data_entry</span></code> submodule<a class="headerlink" href="#module-ges_eis_toolbox.database.data_entry" title="Permalink to this headline">#</a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="ges_eis_toolbox.database.data_entry.DataOrigin">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">ges_eis_toolbox.database.data_entry.</span></span><span class="sig-name descname"><span class="pre">DataOrigin</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ges_eis_toolbox.database.data_entry.DataOrigin" title="Permalink to this definition">#</a></dt>
+<dd><p>Enumeration containing the possible source of data: <cite>Real</cite> and <cite>Simulation_noiseless</cite></p>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="ges_eis_toolbox.database.data_entry.DataPoint">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">ges_eis_toolbox.database.data_entry.</span></span><span class="sig-name descname"><span class="pre">DataPoint</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">origin</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">user</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">instrument</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">equivalent_circuit</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">spectrum</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ges_eis_toolbox.database.data_entry.DataPoint" title="Permalink to this definition">#</a></dt>
+<dd><p>Datacass holding all the data to be stored in the database. The class can be used to
+record both experimental and simulation data. The class implements a save and a
+load methods to save and load JSON formatted datafiles.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>origin</strong> (<a class="reference internal" href="#ges_eis_toolbox.database.data_entry.DataOrigin" title="ges_eis_toolbox.database.data_entry.DataOrigin"><em>DataOrigin</em></a>) – the origin of the data contained in the object</p></li>
+<li><p><strong>user</strong> (<em>Union</em><em>[</em><em>str</em><em>, </em><em>None</em><em>]</em>) – the name of the user that performed the fitting of the experimental data, None in the
+case of a simulation</p></li>
+<li><p><strong>instrument</strong> (<em>Union</em><em>[</em><a class="reference internal" href="#ges_eis_toolbox.database.experiment.Instrument" title="ges_eis_toolbox.database.experiment.Instrument"><em>Instrument</em></a><em>, </em><em>None</em><em>]</em>) – the instrument used in recording the EIS measurement, None in the case of a simulation</p></li>
+<li><p><strong>equivalent_circuit</strong> (<a class="reference internal" href="api_circuit.html#ges_eis_toolbox.circuit.equivalent_circuit.EquivalentCircuit" title="ges_eis_toolbox.circuit.equivalent_circuit.EquivalentCircuit"><em>EquivalentCircuit</em></a>) – the equivalent circuit used in the fit/simulation</p></li>
+<li><p><strong>spectrum</strong> (<a class="reference internal" href="api_spectra.html#ges_eis_toolbox.spectra.spectrum.EIS_Spectrum" title="ges_eis_toolbox.spectra.spectrum.EIS_Spectrum"><em>EIS_Spectrum</em></a>) – the data relative to the EIS spectrum recorded/simulated</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>None</p>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="ges_eis_toolbox.database.data_entry.DataPoint.load">
+<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">load</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ges_eis_toolbox.database.data_entry.DataPoint.load" title="Permalink to this definition">#</a></dt>
+<dd><p>Returns a DataPoint object from a JSON formatted file located at the specified path</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>path</strong> (<em>str</em>) – the path to the .json file containing the DataPoint information</p>
+</dd>
+<dt class="field-even">Raises</dt>
+<dd class="field-even"><p><a class="reference internal" href="api_utils_and_exceptions.html#ges_eis_toolbox.exceptions.FileNotFound" title="ges_eis_toolbox.exceptions.FileNotFound"><strong>FileNotFound</strong></a> – exception raised is the specified path is not valid</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference internal" href="#ges_eis_toolbox.database.data_entry.DataPoint" title="ges_eis_toolbox.database.data_entry.DataPoint">ges_eis_toolbox.database.data_entry.DataPoint</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ges_eis_toolbox.database.data_entry.DataPoint.save">
+<span class="sig-name descname"><span class="pre">save</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">folder</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'.'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ges_eis_toolbox.database.data_entry.DataPoint.save" title="Permalink to this definition">#</a></dt>
+<dd><p>Saves all the data to a JSON formatted file</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>name</strong> (<em>str</em>) – the name of the destination file without extension. All the trailing fields
+separated by <cite>.</cite> will be stripped from the final name</p></li>
+<li><p><strong>folder</strong> (<em>str</em>) – the folder path to which the file must be saved (default: .)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="module-ges_eis_toolbox.database.experiment">
+<span id="the-experiment-submodule"></span><h2>The <code class="docutils literal notranslate"><span class="pre">experiment</span></code> submodule<a class="headerlink" href="#module-ges_eis_toolbox.database.experiment" title="Permalink to this headline">#</a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="ges_eis_toolbox.database.experiment.Experiment">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">ges_eis_toolbox.database.experiment.</span></span><span class="sig-name descname"><span class="pre">Experiment</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ges_eis_toolbox.database.experiment.Experiment" title="Permalink to this definition">#</a></dt>
+<dd><p>Simple class object to load and parse the EIS experimental datafiles produced by various
+instrument brands.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>path</strong> (<em>str</em>) – path to the experimental file to parse</p>
+</dd>
+<dt class="field-even">Raises</dt>
+<dd class="field-even"><ul class="simple">
+<li><p><a class="reference internal" href="api_utils_and_exceptions.html#ges_eis_toolbox.exceptions.FileNotFound" title="ges_eis_toolbox.exceptions.FileNotFound"><strong>FileNotFound</strong></a> – exception raised when the provided path do not represent a vaid file path</p></li>
+<li><p><a class="reference internal" href="api_utils_and_exceptions.html#ges_eis_toolbox.exceptions.UnknownFileExtension" title="ges_eis_toolbox.exceptions.UnknownFileExtension"><strong>UnknownFileExtension</strong></a> – exception raised when the file extension does not match the supported ones</p></li>
+</ul>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>None</p>
+</dd>
+</dl>
+<dl class="py property">
+<dt class="sig sig-object py" id="ges_eis_toolbox.database.experiment.Experiment.instrument">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">instrument</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="#ges_eis_toolbox.database.experiment.Instrument" title="ges_eis_toolbox.database.experiment.Instrument"><span class="pre">ges_eis_toolbox.database.experiment.Instrument</span></a></em><a class="headerlink" href="#ges_eis_toolbox.database.experiment.Experiment.instrument" title="Permalink to this definition">#</a></dt>
+<dd><p>Brand/model of the instrument used to collect the experimental data</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>the name of the instrument</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p><a class="reference internal" href="#ges_eis_toolbox.database.experiment.Instrument" title="ges_eis_toolbox.database.experiment.Instrument">Instrument</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="ges_eis_toolbox.database.experiment.Experiment.spectrum">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">spectrum</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="api_spectra.html#ges_eis_toolbox.spectra.spectrum.EIS_Spectrum" title="ges_eis_toolbox.spectra.spectrum.EIS_Spectrum"><span class="pre">ges_eis_toolbox.spectra.spectrum.EIS_Spectrum</span></a></em><a class="headerlink" href="#ges_eis_toolbox.database.experiment.Experiment.spectrum" title="Permalink to this definition">#</a></dt>
+<dd><p>Experimental EIS spectrum</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>an EIS_Spectrum object containing the experimental data collected during the
+experiment</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p><a class="reference internal" href="api_spectra.html#ges_eis_toolbox.spectra.spectrum.EIS_Spectrum" title="ges_eis_toolbox.spectra.spectrum.EIS_Spectrum">EIS_Spectrum</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="ges_eis_toolbox.database.experiment.Instrument">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">ges_eis_toolbox.database.experiment.</span></span><span class="sig-name descname"><span class="pre">Instrument</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ges_eis_toolbox.database.experiment.Instrument" title="Permalink to this definition">#</a></dt>
+<dd><p>Simple enumeration class to easily reference instrument types.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="ges_eis_toolbox.database.experiment.Instrument.GAMRY">
+<span class="sig-name descname"><span class="pre">GAMRY</span></span><a class="headerlink" href="#ges_eis_toolbox.database.experiment.Instrument.GAMRY" title="Permalink to this definition">#</a></dt>
+<dd><p>GAMRY instrument producing .DTA files (value [str]: “GAMRY”)</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="ges_eis_toolbox.database.experiment.Instrument.BIOLOGIC">
+<span class="sig-name descname"><span class="pre">BIOLOGIC</span></span><a class="headerlink" href="#ges_eis_toolbox.database.experiment.Instrument.BIOLOGIC" title="Permalink to this definition">#</a></dt>
+<dd><p>BIOLOGIC instrument producing .mpt files (value [str]: “BIOLOGIC”)</p>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="module-ges_eis_toolbox.database.generator">
+<span id="the-generator-submodule"></span><h2>The <code class="docutils literal notranslate"><span class="pre">generator</span></code> submodule<a class="headerlink" href="#module-ges_eis_toolbox.database.generator" title="Permalink to this headline">#</a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="ges_eis_toolbox.database.generator.Generator">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">ges_eis_toolbox.database.generator.</span></span><span class="sig-name descname"><span class="pre">Generator</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">circuit</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ranges</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">simulation_limit</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1000000</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">steps_limit</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sampling_scheme</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">SamplingMode.logarithmic</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ges_eis_toolbox.database.generator.Generator" title="Permalink to this definition">#</a></dt>
+<dd><p>Simple genrator class capable of running multiple simulation of a given circuit exploring,
+with an omogeneus scheme, a defined range of component parameters. The class take advantage
+of the series permutation symmetry of the circuit to reduce the number of simulation to
+be executed.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>circuit</strong> (<a class="reference internal" href="api_circuit.html#ges_eis_toolbox.circuit.circuit_string.CircuitString" title="ges_eis_toolbox.circuit.circuit_string.CircuitString"><em>CircuitString</em></a>) – the circuit string object representing the base circuit to simulate</p></li>
+<li><p><strong>ranges</strong> (<em>Dict</em><em>[</em><em>str</em><em>, </em><em>Dict</em><em>[</em><em>str</em><em>, </em><a class="reference internal" href="#ges_eis_toolbox.database.generator.Range" title="ges_eis_toolbox.database.generator.Range"><em>Range</em></a><em>]</em><em>]</em>) – the dictionary encoding the range of component values to be explored. The key of the
+dictionary represents the permutation base groups encoding the circuit while the values
+encode the range of values associated to each component. These are in turn organized in
+a dictionary in which the key are represented by the component symbols while the values
+are represented by Range objects.</p></li>
+<li><p><strong>simulation_limit</strong> (<em>int</em>) – sets the maximum number of simulations to be executed by the code (default: 1e+6). Please
+notice how this is different from the real number of simulations that is instead computed
+based on the circuit structure.</p></li>
+<li><p><strong>steps_limit</strong> (<em>Union</em><em>[</em><em>int</em><em>, </em><em>None</em><em>]</em>) – sets the maximum number of steps for each degree of freedom to be explored in the
+simulation. If set to None, will leave the step number free to approach the value that
+better fits the <cite>simulation_limit</cite> parameter.</p></li>
+<li><p><strong>sampling_scheme</strong> (<a class="reference internal" href="#ges_eis_toolbox.database.generator.SamplingMode" title="ges_eis_toolbox.database.generator.SamplingMode"><em>SamplingMode</em></a>) – </p></li>
+</ul>
+</dd>
+<dt class="field-even">Raises</dt>
+<dd class="field-even"><ul class="simple">
+<li><p><strong>TypeError</strong> – exception raised if the <cite>circuit</cite> parameter is not of type <cite>CircuitString</cite></p></li>
+<li><p><strong>ValueError</strong> – exception raised if a mismatch exists between the key of the ranges parameters and the
+    one generated by the <cite>permutation_base_groups</cite> function of the <cite>CircuitString</cite> class</p></li>
+</ul>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>None</p>
+</dd>
+</dl>
+<dl class="py property">
+<dt class="sig sig-object py" id="ges_eis_toolbox.database.generator.Generator.circuit">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">circuit</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="api_circuit.html#ges_eis_toolbox.circuit.circuit_string.CircuitString" title="ges_eis_toolbox.circuit.circuit_string.CircuitString"><span class="pre">ges_eis_toolbox.circuit.circuit_string.CircuitString</span></a></em><a class="headerlink" href="#ges_eis_toolbox.database.generator.Generator.circuit" title="Permalink to this definition">#</a></dt>
+<dd><p>The circuit string representing the circuit to be simulated</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>the <cite>CrcuitString</cite> object representing the circuit to be simulated</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p><a class="reference internal" href="api_circuit.html#ges_eis_toolbox.circuit.circuit_string.CircuitString" title="ges_eis_toolbox.circuit.circuit_string.CircuitString">CircuitString</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ges_eis_toolbox.database.generator.Generator.generate_parameterization">
+<span class="sig-name descname"><span class="pre">generate_parameterization</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">index</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ges_eis_toolbox.database.generator.Generator.generate_parameterization" title="Permalink to this definition">#</a></dt>
+<dd><p>Generate the parameterization associated to a given index taking into account the series
+permutation symmetry of the circuit elements.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>index</strong> (<em>int</em>) – the index of the desired circuit configuration</p>
+</dd>
+<dt class="field-even">Raises</dt>
+<dd class="field-even"><p><strong>ValueError</strong> – exception raised if the given index is invalid (either negative of greated then
+    the number of simulations)</p>
+</dd>
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>The dictionary encoding the parameterization of the circuit. The key of the dictionary
+encode the component symbol while the values the associated parameters. If the only one
+parameter is associated to a given component the value will be of type float else of
+type List[float].</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>Dict[str, Union[float, List[float]]]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="ges_eis_toolbox.database.generator.Generator.number_of_simulations">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">number_of_simulations</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">int</span></em><a class="headerlink" href="#ges_eis_toolbox.database.generator.Generator.number_of_simulations" title="Permalink to this definition">#</a></dt>
+<dd><p>The number of simulation that will be executed</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>the total number of sumulations</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>int</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="ges_eis_toolbox.database.generator.Generator.number_of_steps">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">number_of_steps</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">int</span></em><a class="headerlink" href="#ges_eis_toolbox.database.generator.Generator.number_of_steps" title="Permalink to this definition">#</a></dt>
+<dd><p>The number of steps in which each parameter will be samples</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>the total number of steps for each variable</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>int</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ges_eis_toolbox.database.generator.Generator.on_the_fly_dataset">
+<span class="sig-name descname"><span class="pre">on_the_fly_dataset</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">frequency</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cores</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">-</span> <span class="pre">1</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ges_eis_toolbox.database.generator.Generator.on_the_fly_dataset" title="Permalink to this definition">#</a></dt>
+<dd><p>Run all the simulations in parallel using a static scheduling and return the results
+in the form of a numpy array containing the simulated complex impedance.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>frequency</strong> (<em>Union</em><em>[</em><em>List</em><em>[</em><em>float</em><em>]</em><em>, </em><em>numpy.ndarray</em><em>]</em>) – the list (or numpy array) containing the float frequency values at which the
+circuit must be simulated</p></li>
+<li><p><strong>cores</strong> (<em>int</em>) – the number of cores to be used by the simulation process. If set to <cite>-1</cite> (default)
+will use all the cores available on the machine</p></li>
+</ul>
+</dd>
+<dt class="field-even">Raises</dt>
+<dd class="field-even"><p><strong>ValueError</strong> – exception raised if the number of cores selected by the user is invalid</p>
+</dd>
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>list of DataPoint objects ecoding all the simulations that have been run</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>List[<a class="reference internal" href="#ges_eis_toolbox.database.data_entry.DataPoint" title="ges_eis_toolbox.database.data_entry.DataPoint">DataPoint</a>]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ges_eis_toolbox.database.generator.Generator.save_dataset">
+<span class="sig-name descname"><span class="pre">save_dataset</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">frequency</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cores</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">-</span> <span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">basename</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'simulation'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">folder</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'.'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ges_eis_toolbox.database.generator.Generator.save_dataset" title="Permalink to this definition">#</a></dt>
+<dd><p>Run all the simulations in parallel using a static scheduling and dump the results to
+individual simulation files.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>frequency</strong> (<em>Union</em><em>[</em><em>List</em><em>[</em><em>float</em><em>]</em><em>, </em><em>numpy.ndarray</em><em>]</em>) – the list (or numpy array) containing the float frequency values at which the
+circuit must be simulated</p></li>
+<li><p><strong>cores</strong> (<em>int</em>) – the number of cores to be used by the simulation process. If set to <cite>-1</cite> (default)
+will use all the cores available on the machine</p></li>
+<li><p><strong>basename</strong> (<em>str</em>) – the basename of the generated datafiles (default: <cite>simulation</cite>). e.g. if basename
+is set to <cite>sim</cite> the files generated will be named <cite>sim_X.json</cite> where <cite>X</cite> represents
+the simulation index.</p></li>
+<li><p><strong>folder</strong> (<em>str</em>) – the path to the folder in which the datafiles must be saved. (default: “.”)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Raises</dt>
+<dd class="field-even"><p><strong>ValueError</strong> – exception raised if the number of cores selected by the user is invalid</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="ges_eis_toolbox.database.generator.Range">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">ges_eis_toolbox.database.generator.</span></span><span class="sig-name descname"><span class="pre">Range</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">min</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ges_eis_toolbox.database.generator.Range" title="Permalink to this definition">#</a></dt>
+<dd><p>Simple multiparametric range class capable, given an index, of mapping one or more parameters
+in a range between a maximum and a minimum.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>min</strong> (<em>Union</em><em>[</em><em>float</em><em>, </em><em>List</em><em>[</em><em>float</em><em>]</em><em>]</em>) – float or list of float defining the minimum of the range</p></li>
+<li><p><strong>max</strong> (<em>Union</em><em>[</em><em>float</em><em>, </em><em>List</em><em>[</em><em>float</em><em>]</em><em>]</em>) – float or list of float defining the maximum of the range</p></li>
+</ul>
+</dd>
+<dt class="field-even">Raises</dt>
+<dd class="field-even"><ul class="simple">
+<li><p><strong>TypeError</strong> – exception raised when the argument type does not match the expected ones (float or List[float])</p></li>
+<li><p><strong>ValueError</strong> – exception raised when either min and max lists have different length or if at least
+    one of the min values is greater than the correspondent max value</p></li>
+</ul>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>None</p>
+</dd>
+</dl>
+<dl class="py property">
+<dt class="sig sig-object py" id="ges_eis_toolbox.database.generator.Range.delta">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">delta</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#ges_eis_toolbox.database.generator.Range.delta" title="Permalink to this definition">#</a></dt>
+<dd><p>The length of the range sides</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>The list of float values encoding the length of each side of the range</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>List[float]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ges_eis_toolbox.database.generator.Range.generate_step">
+<span class="sig-name descname"><span class="pre">generate_step</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">index</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">steps</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">scheme</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ges_eis_toolbox.database.generator.Range.generate_step" title="Permalink to this definition">#</a></dt>
+<dd><p>Given the homogeneous subdivision of the range in <cite>steps</cite> parts, comutes the values of
+grid associated the point described by the list of indeces provided as the <cite>index</cite> variable</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>index</strong> (<em>List</em><em>[</em><em>int</em><em>]</em>) – the list encoding the coordinates of the desired point in the homogeneouly sampled
+space</p></li>
+<li><p><strong>steps</strong> (<em>int</em>) – the number of steps in which each dimension of the range is subdivided</p></li>
+<li><p><strong>scheme</strong> (<a class="reference internal" href="#ges_eis_toolbox.database.generator.SamplingMode" title="ges_eis_toolbox.database.generator.SamplingMode"><em>SamplingMode</em></a>) – the type of sampling scheme adopted (options: <cite>linear</cite> or <cite>logarithmic</cite>)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Raises</dt>
+<dd class="field-even"><p><strong>ValueError</strong> – exception raised when either the <cite>index</cite> or the <cite>steps</cite> parameter assume an invalid value</p>
+</dd>
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>the coordinate of the selected point on the grid</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>List[float]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="ges_eis_toolbox.database.generator.Range.max">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">max</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#ges_eis_toolbox.database.generator.Range.max" title="Permalink to this definition">#</a></dt>
+<dd><p>The maximum extreme of the range</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>The list of float values encoding the maximum extreme of the range</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>List[float]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="ges_eis_toolbox.database.generator.Range.min">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">min</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#ges_eis_toolbox.database.generator.Range.min" title="Permalink to this definition">#</a></dt>
+<dd><p>The minimum extreme of the range</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>The list of float values encoding the minimum extreme of the range</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>List[float]</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="ges_eis_toolbox.database.generator.SamplingMode">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">ges_eis_toolbox.database.generator.</span></span><span class="sig-name descname"><span class="pre">SamplingMode</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ges_eis_toolbox.database.generator.SamplingMode" title="Permalink to this definition">#</a></dt>
+<dd><p>An enumeration.</p>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="ges_eis_toolbox.database.generator.Task">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">ges_eis_toolbox.database.generator.</span></span><span class="sig-name descname"><span class="pre">Task</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">gen</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">start</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">end</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">frequency</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">basename</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">folder</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ges_eis_toolbox.database.generator.Task" title="Permalink to this definition">#</a></dt>
+<dd><p>Simple dataclass to hold the parameters required to run a simulation with the job_engine
+function.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>gen</strong> (<a class="reference internal" href="#ges_eis_toolbox.database.generator.Generator" title="ges_eis_toolbox.database.generator.Generator"><em>Generator</em></a>) – the object capable of generating, starting from a given index, the circuit parameterization
+to be considered in the simulation.</p></li>
+<li><p><strong>start</strong> (<em>int</em>) – the starting value of the range in which the index must be sampled (included in the simulation)</p></li>
+<li><p><strong>end</strong> (<em>int</em>) – the end value of the range in which the index must be sampled (excluded from the simulation)</p></li>
+<li><p><strong>frequency</strong> (<em>numpy.ndarray</em>) – the list holding the frequency values at which the circuit must be simulated</p></li>
+<li><p><strong>basename</strong> (<em>str</em>) – the basename of the generated datafiles. e.g. if basename is set to <cite>sim</cite> the files
+generated will be named <cite>sim_X.json</cite> where <cite>X</cite> represents the simulation index.</p></li>
+<li><p><strong>folder</strong> (<em>str</em>) – the path to the folder in which the datafiles must be saved.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="ges_eis_toolbox.database.generator.io_job_engine">
+<span class="sig-prename descclassname"><span class="pre">ges_eis_toolbox.database.generator.</span></span><span class="sig-name descname"><span class="pre">io_job_engine</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">task</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ges_eis_toolbox.database.generator.io_job_engine" title="Permalink to this definition">#</a></dt>
+<dd><p>Runs all the simulations encoded by the selected simulation task and saves the data into
+a file.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>task</strong> (<a class="reference internal" href="#ges_eis_toolbox.database.generator.Task" title="ges_eis_toolbox.database.generator.Task"><em>Task</em></a>) – the dataclass encoding the simulation parameters</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="ges_eis_toolbox.database.generator.ram_job_engine">
+<span class="sig-prename descclassname"><span class="pre">ges_eis_toolbox.database.generator.</span></span><span class="sig-name descname"><span class="pre">ram_job_engine</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">task</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ges_eis_toolbox.database.generator.ram_job_engine" title="Permalink to this definition">#</a></dt>
+<dd><p>Runs all the simulations encoded by the selected simulation task and returns a list of the
+computed complex impedances</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>task</strong> (<a class="reference internal" href="#ges_eis_toolbox.database.generator.Task" title="ges_eis_toolbox.database.generator.Task"><em>Task</em></a>) – the dataclass encoding the simulation parameters</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>the list containing all the simulated EIS spectra</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>List[<a class="reference internal" href="#ges_eis_toolbox.database.data_entry.DataPoint" title="ges_eis_toolbox.database.data_entry.DataPoint">DataPoint</a>]</p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+</section>
+
+    <script type="text/x-thebe-config">
+    {
+        requestKernel: true,
+        binderOptions: {
+            repo: "binder-examples/jupyter-stacks-datascience",
+            ref: "master",
+        },
+        codeMirrorConfig: {
+            theme: "abcdef",
+            mode: "python"
+        },
+        kernelOptions: {
+            kernelName: "python3",
+            path: "./API"
+        },
+        predefinedOutput: true
+    }
+    </script>
+    <script>kernelName = 'python3'</script>
+
+              </div>
+              
+              
+              <!-- Previous / next buttons -->
+<div class='prev-next-area'>
+    <a class='left-prev' id="prev-link" href="api_circuit.html" title="previous page">
+        <i class="fas fa-angle-left"></i>
+        <div class="prev-next-info">
+            <p class="prev-next-subtitle">previous</p>
+            <p class="prev-next-title">The <code class="docutils literal notranslate"><span class="pre">ges-eis-toolbox.circuit</span></code> module</p>
+        </div>
+    </a>
+    <a class='right-next' id="next-link" href="api_machine_learning.html" title="next page">
+    <div class="prev-next-info">
+        <p class="prev-next-subtitle">next</p>
+        <p class="prev-next-title">The <code class="docutils literal notranslate"><span class="pre">ges-eis-toolbox.machine_learning</span></code> module</p>
+    </div>
+    <i class="fas fa-angle-right"></i>
+    </a>
+</div>
+              
+          </main>
+          
+
+      </div>
+    </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="../_static/scripts/pydata-sphinx-theme.js?digest=1999514e3f237ded88cf"></script>
+<footer class="footer mt-5 mt-md-0">
+  <div class="container">
+    
+    <div class="footer-item">
+      <p class="copyright">
+    &copy; Copyright 2022.<br>
+</p>
+    </div>
+    
+    <div class="footer-item">
+      <p class="sphinx-version">
+Created using <a href="http://sphinx-doc.org/">Sphinx</a> 4.5.0.<br>
+</p>
+    </div>
+    
+  </div>
+</footer>
+  </body>
+</html>

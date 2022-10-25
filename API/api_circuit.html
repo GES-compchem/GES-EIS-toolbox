@@ -1,0 +1,579 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+    <title>The ges-eis-toolbox.circuit module &#8212; GES-EIS-toolbox Documentation</title>
+    
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../_static/styles/theme.css?digest=1999514e3f237ded88cf" rel="stylesheet">
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=1999514e3f237ded88cf" rel="stylesheet">
+
+    
+  <link rel="stylesheet"
+    href="../_static/vendor/fontawesome/5.13.0/css/all.min.css">
+  <link rel="preload" as="font" type="font/woff2" crossorigin
+    href="../_static/vendor/fontawesome/5.13.0/webfonts/fa-solid-900.woff2">
+  <link rel="preload" as="font" type="font/woff2" crossorigin
+    href="../_static/vendor/fontawesome/5.13.0/webfonts/fa-brands-400.woff2">
+
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/togglebutton.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/copybutton.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/mystnb.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinx-thebe.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/design-style.b7bb847fb20b106c3d81b95245e65545.min.css" />
+    
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=1999514e3f237ded88cf">
+
+    <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <script src="../_static/clipboard.min.js"></script>
+    <script src="../_static/copybutton.js"></script>
+    <script src="../_static/scripts/sphinx-book-theme.js?digest=9c920249402e914e316237a7dbc6769907cce411"></script>
+    <script>let toggleHintShow = 'Click to show';</script>
+    <script>let toggleHintHide = 'Click to hide';</script>
+    <script>let toggleOpenOnPrint = 'true';</script>
+    <script src="../_static/togglebutton.js"></script>
+    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown, .tag_hide_input div.cell_input, .tag_hide-input div.cell_input, .tag_hide_output div.cell_output, .tag_hide-output div.cell_output, .tag_hide_cell.cell, .tag_hide-cell.cell';</script>
+    <script src="../_static/design-tabs.js"></script>
+    <script>const THEBE_JS_URL = "https://unpkg.com/thebe@0.8.2/lib/index.js"
+const thebe_selector = ".thebe,.cell"
+const thebe_selector_input = "pre"
+const thebe_selector_output = ".output, .cell_output"
+</script>
+    <script async="async" src="../_static/sphinx-thebe.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="The ges-eis-toolbox.database module" href="api_database.html" />
+    <link rel="prev" title="API Documentation" href="../api.html" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="docsearch:language" content="None">
+    
+
+    <!-- Google Analytics -->
+    
+  </head>
+  <body data-spy="scroll" data-target="#bd-toc-nav" data-offset="60">
+    
+    <div class="container-fluid" id="banner"></div>
+
+    
+    <nav class="navbar navbar-light navbar-expand-lg bg-light fixed-top bd-navbar" id="navbar-main"><div class="container-xl">
+
+  <div id="navbar-start">
+    
+    
+<a class="navbar-brand" href="../intro.html">
+<p class="title">Python</p>
+</a>
+
+    
+  </div>
+
+  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbar-collapsible" aria-controls="navbar-collapsible" aria-expanded="false" aria-label="Toggle navigation">
+    <span class="navbar-toggler-icon"></span>
+  </button>
+
+  
+  <div id="navbar-collapsible" class="col-lg-9 collapse navbar-collapse">
+    <div id="navbar-center" class="mr-auto">
+      
+      <div class="navbar-center-item">
+        <ul id="navbar-main-elements" class="navbar-nav">
+    <li class="toctree-l1 current active nav-item">
+ <a class="reference internal nav-link" href="../api.html">
+  API Documentation
+ </a>
+</li>
+
+    
+</ul>
+      </div>
+      
+    </div>
+
+    <div id="navbar-end">
+      
+      <div class="navbar-end-item">
+        <ul id="navbar-icon-links" class="navbar-nav" aria-label="Icon Links">
+      </ul>
+      </div>
+      
+    </div>
+  </div>
+</div>
+    </nav>
+    
+
+    <div class="container-xl">
+      <div class="row">
+          
+            
+            <!-- Only show if we have sidebars configured, else just a small margin  -->
+            <div class="col-12 col-md-3 bd-sidebar">
+              <div class="sidebar-start-items"><form class="bd-search d-flex align-items-center" action="../search.html" method="get">
+  <i class="icon fas fa-search"></i>
+  <input type="search" class="form-control" name="q" id="search-input" placeholder="Search this book..." aria-label="Search this book..." autocomplete="off" >
+</form><nav class="bd-links" id="bd-docs-nav" aria-label="Main navigation">
+  <div class="bd-toc-item active">
+    <ul class="current nav bd-sidenav">
+ <li class="toctree-l1 current active">
+  <a class="current reference internal" href="#">
+   The
+   <code class="docutils literal notranslate">
+    <span class="pre">
+     ges-eis-toolbox.circuit
+    </span>
+   </code>
+   module
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="api_database.html">
+   The
+   <code class="docutils literal notranslate">
+    <span class="pre">
+     ges-eis-toolbox.database
+    </span>
+   </code>
+   module
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="api_machine_learning.html">
+   The
+   <code class="docutils literal notranslate">
+    <span class="pre">
+     ges-eis-toolbox.machine_learning
+    </span>
+   </code>
+   module
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="api_spectra.html">
+   The
+   <code class="docutils literal notranslate">
+    <span class="pre">
+     ges-eis-toolbox.spectra
+    </span>
+   </code>
+   module
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="api_utils_and_exceptions.html">
+   The
+   <code class="docutils literal notranslate">
+    <span class="pre">
+     ges-eis-toolbox.utils
+    </span>
+   </code>
+   module
+  </a>
+ </li>
+</ul>
+
+  </div>
+</nav>
+              </div>
+              <div class="sidebar-end-items">
+              </div>
+            </div>
+            
+          
+
+          
+          <div class="d-none d-xl-block col-xl-2 bd-toc">
+            
+              
+              <div class="toc-item">
+                
+<div class="tocsection onthispage mt-5 pt-1 pb-3">
+    <i class="fas fa-list"></i> On this page
+</div>
+
+<nav id="bd-toc-nav">
+    <ul class="visible nav section-nav flex-column">
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#module-ges_eis_toolbox.circuit.circuit_string">
+   The
+   <code class="docutils literal notranslate">
+    <span class="pre">
+     circuit_string
+    </span>
+   </code>
+   submodule
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#module-ges_eis_toolbox.circuit.equivalent_circuit">
+   The
+   <code class="docutils literal notranslate">
+    <span class="pre">
+     equivalent_circuit
+    </span>
+   </code>
+   submodule
+  </a>
+ </li>
+</ul>
+
+</nav>
+              </div>
+              
+              <div class="toc-item">
+                
+              </div>
+              
+            
+          </div>
+          
+
+          
+          
+            
+          
+          <main class="col-12 col-md-9 col-xl-7 py-md-5 pl-md-5 pr-md-4 bd-content" role="main">
+              
+              <div>
+                
+  <section class="tex2jax_ignore mathjax_ignore" id="the-ges-eis-toolbox-circuit-module">
+<span id="api-circuit"></span><h1>The <code class="docutils literal notranslate"><span class="pre">ges-eis-toolbox.circuit</span></code> module<a class="headerlink" href="#the-ges-eis-toolbox-circuit-module" title="Permalink to this headline">#</a></h1>
+<section id="module-ges_eis_toolbox.circuit.circuit_string">
+<span id="the-circuit-string-submodule"></span><h2>The <code class="docutils literal notranslate"><span class="pre">circuit_string</span></code> submodule<a class="headerlink" href="#module-ges_eis_toolbox.circuit.circuit_string" title="Permalink to this headline">#</a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="ges_eis_toolbox.circuit.circuit_string.CircuitString">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">ges_eis_toolbox.circuit.circuit_string.</span></span><span class="sig-name descname"><span class="pre">CircuitString</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">string</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">validate</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ges_eis_toolbox.circuit.circuit_string.CircuitString" title="Permalink to this definition">#</a></dt>
+<dd><p>Class to store the properties of the string representation of an EIS equivalent circuit
+according to the convention adopted in the <cite>impedance.py</cite> library. The class implements the
+basic manupulation functions to decompose, compare and analyze the circuit properties.
+The class implements a <cite>__str__</cite> and a <cite>__repr__</cite> methods returning the content of the string.
+The class also implements the <cite>__add__</cite> and <cite>__iadd__</cite> operations to concatenate other circuit
+string representations.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>string</strong> (<em>str</em>) – the string representing the EIS equivalent circuit</p></li>
+<li><p><strong>validate</strong> (<em>bool</em>) – if True (default) will automatically run a validation of the syntax of the input string</p></li>
+</ul>
+</dd>
+<dt class="field-even">Raises</dt>
+<dd class="field-even"><p><strong>TypeError</strong> – exception raised when the input <cite>string</cite> is not of type <cite>str</cite></p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>None</p>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="ges_eis_toolbox.circuit.circuit_string.CircuitString.decompose_series">
+<span class="sig-name descname"><span class="pre">decompose_series</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#ges_eis_toolbox.circuit.circuit_string.CircuitString.decompose_series" title="Permalink to this definition">#</a></dt>
+<dd><p>Returns, as a list of <cite>CircuitString</cite> objects, the decomposition of the circuit string
+in terms of sub-circuits that, when connected in series, represent the starting circuit.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>a list containing the various sub-circuits strings</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>List[<a class="reference internal" href="#ges_eis_toolbox.circuit.circuit_string.CircuitString" title="ges_eis_toolbox.circuit.circuit_string.CircuitString">CircuitString</a>]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="ges_eis_toolbox.circuit.circuit_string.CircuitString.is_ordered">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">is_ordered</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">bool</span></em><a class="headerlink" href="#ges_eis_toolbox.circuit.circuit_string.CircuitString.is_ordered" title="Permalink to this definition">#</a></dt>
+<dd><p>True if the circuit string is ordered both in terms of series blocks and component
+labels, else false.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>boolean representing if the circuit string is ordered.</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>bool</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="ges_eis_toolbox.circuit.circuit_string.CircuitString.is_pure_parallel">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">is_pure_parallel</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">bool</span></em><a class="headerlink" href="#ges_eis_toolbox.circuit.circuit_string.CircuitString.is_pure_parallel" title="Permalink to this definition">#</a></dt>
+<dd><p>True if the string represents a single parallel circuit block, else False.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>boolean representing if the string represents a single parallel circuit block.</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>bool</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="ges_eis_toolbox.circuit.circuit_string.CircuitString.is_simple_series">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">is_simple_series</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">bool</span></em><a class="headerlink" href="#ges_eis_toolbox.circuit.circuit_string.CircuitString.is_simple_series" title="Permalink to this definition">#</a></dt>
+<dd><p>True if the string represents a circuit generated by the simple series
+combination of components (no element in parallel), else False.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>boolean representing if the string represents a circuit generated by the simple series
+combination of components.</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>bool</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ges_eis_toolbox.circuit.circuit_string.CircuitString.list_components">
+<span class="sig-name descname"><span class="pre">list_components</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">sort</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ges_eis_toolbox.circuit.circuit_string.CircuitString.list_components" title="Permalink to this definition">#</a></dt>
+<dd><p>Returns the labels associated to each component in the circuit in alphabetical order</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>the list of the label associated to each component in the circuit</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>List[str]</p>
+</dd>
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>sort</strong> (<em>bool</em>) – </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="ges_eis_toolbox.circuit.circuit_string.CircuitString.number_of_components">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">number_of_components</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">int</span></em><a class="headerlink" href="#ges_eis_toolbox.circuit.circuit_string.CircuitString.number_of_components" title="Permalink to this definition">#</a></dt>
+<dd><p>The total number of components in the circuit.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>the total number of components in the string.</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>int</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ges_eis_toolbox.circuit.circuit_string.CircuitString.permutation_base_groups">
+<span class="sig-name descname"><span class="pre">permutation_base_groups</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#ges_eis_toolbox.circuit.circuit_string.CircuitString.permutation_base_groups" title="Permalink to this definition">#</a></dt>
+<dd><p>Compute the decomposition of the circuit string in a set of permutation base groups.
+Each base group represents the base circuit structure associated to one or more series
+circuit blocks equivalent under component permutation and re-labelling.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>the dictionary containing the data encoding each base group. The keys of the
+dictionary encode the structure of the base circuit while the dictionary values
+represent a list, of lenght equal to the number of equivalent circuit blocks, containing
+the conversion tables encoding the correspondence between the components in the
+real circuit and the one in the base one.</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>Dict[str, List[Dict[str, str]]]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ges_eis_toolbox.circuit.circuit_string.CircuitString.remove_numbers">
+<span class="sig-name descname"><span class="pre">remove_numbers</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#ges_eis_toolbox.circuit.circuit_string.CircuitString.remove_numbers" title="Permalink to this definition">#</a></dt>
+<dd><p>Returns the circuit string without the component numbers (only symbols and component
+connectivity)</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>the circuit string without the component numbers</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p><a class="reference internal" href="#ges_eis_toolbox.circuit.circuit_string.CircuitString" title="ges_eis_toolbox.circuit.circuit_string.CircuitString">CircuitString</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ges_eis_toolbox.circuit.circuit_string.CircuitString.reorder">
+<span class="sig-name descname"><span class="pre">reorder</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#ges_eis_toolbox.circuit.circuit_string.CircuitString.reorder" title="Permalink to this definition">#</a></dt>
+<dd><p>Recursively orders the circuit string in order of sub-circuit complexity.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>the ordered circuit string</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p><a class="reference internal" href="#ges_eis_toolbox.circuit.circuit_string.CircuitString" title="ges_eis_toolbox.circuit.circuit_string.CircuitString">CircuitString</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ges_eis_toolbox.circuit.circuit_string.CircuitString.reorder_labels">
+<span class="sig-name descname"><span class="pre">reorder_labels</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#ges_eis_toolbox.circuit.circuit_string.CircuitString.reorder_labels" title="Permalink to this definition">#</a></dt>
+<dd><p>Returns the circuit string in which the components labels have been assigned in
+progressive order, without gaps, to number each component type</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p><ul class="simple">
+<li><p><em>CircuitString</em> – the circuit string with the updated labels</p></li>
+<li><p><em>Dict[str, str]</em> – dictionary mapping the old component symbol (key) to the new one</p></li>
+</ul>
+</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p><em>Tuple</em>[<a class="reference internal" href="#ges_eis_toolbox.circuit.circuit_string.CircuitString" title="ges_eis_toolbox.circuit.circuit_string.CircuitString">ges_eis_toolbox.circuit.circuit_string.CircuitString</a>, <em>Dict</em>[str, str]]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="ges_eis_toolbox.circuit.circuit_string.CircuitString.value">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">value</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></em><a class="headerlink" href="#ges_eis_toolbox.circuit.circuit_string.CircuitString.value" title="Permalink to this definition">#</a></dt>
+<dd><p>The circuit string (read-only).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>the string representing the circuit</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="module-ges_eis_toolbox.circuit.equivalent_circuit">
+<span id="the-equivalent-circuit-submodule"></span><h2>The <code class="docutils literal notranslate"><span class="pre">equivalent_circuit</span></code> submodule<a class="headerlink" href="#module-ges_eis_toolbox.circuit.equivalent_circuit" title="Permalink to this headline">#</a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="ges_eis_toolbox.circuit.equivalent_circuit.EquivalentCircuit">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">ges_eis_toolbox.circuit.equivalent_circuit.</span></span><span class="sig-name descname"><span class="pre">EquivalentCircuit</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">circuit</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">parameters</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ges_eis_toolbox.circuit.equivalent_circuit.EquivalentCircuit" title="Permalink to this definition">#</a></dt>
+<dd><p>Class to hold the data relative to a parametrized EIS equivalent circuit. The class wraps
+the simulation routine provided by the impedance.py package. The class provides __getitem__
+and __setitem__ methods to access/set the component values by name. The __eq__ and __ne__
+methods are also provided to check strict equality (equality between electrically equivalent
+circuits will evaluate to true only if the circuit topology and component numbering matches)</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>circuit</strong> (<em>Union</em><em>[</em><em>str</em><em>, </em><a class="reference internal" href="#ges_eis_toolbox.circuit.circuit_string.CircuitString" title="ges_eis_toolbox.circuit.circuit_string.CircuitString"><em>CircuitString</em></a><em>]</em>) – string representation of a circuit either in form of a CircuitString object or in the
+form of a valid string (used to automatically inizialize a CircuitString object)</p></li>
+<li><p><strong>parameters</strong> (<em>Union</em><em>[</em><em>None</em><em>, </em><em>Dict</em><em>[</em><em>str</em><em>, </em><em>float</em><em>]</em><em>]</em>) – a dictionary containing the list of components (as keys) associated to their value.
+If set to None will inizialize all the components values to None</p></li>
+</ul>
+</dd>
+<dt class="field-even">Raises</dt>
+<dd class="field-even"><p><strong>TypeError</strong> – Exception raised if the circuit parameter type does no match the required one</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>None</p>
+</dd>
+</dl>
+<dl class="py property">
+<dt class="sig sig-object py" id="ges_eis_toolbox.circuit.equivalent_circuit.EquivalentCircuit.circuit_string">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">circuit_string</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="#ges_eis_toolbox.circuit.circuit_string.CircuitString" title="ges_eis_toolbox.circuit.circuit_string.CircuitString"><span class="pre">ges_eis_toolbox.circuit.circuit_string.CircuitString</span></a></em><a class="headerlink" href="#ges_eis_toolbox.circuit.equivalent_circuit.EquivalentCircuit.circuit_string" title="Permalink to this definition">#</a></dt>
+<dd><p>The CircuitString object representing the equivalent circuit</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="ges_eis_toolbox.circuit.equivalent_circuit.EquivalentCircuit.parameters">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">parameters</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">float</span><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#ges_eis_toolbox.circuit.equivalent_circuit.EquivalentCircuit.parameters" title="Permalink to this definition">#</a></dt>
+<dd><p>The parameters defining the equivalent circuit</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ges_eis_toolbox.circuit.equivalent_circuit.EquivalentCircuit.simulate">
+<span class="sig-name descname"><span class="pre">simulate</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">frequency</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ges_eis_toolbox.circuit.equivalent_circuit.EquivalentCircuit.simulate" title="Permalink to this definition">#</a></dt>
+<dd><p>Simulate the circuit over the range of specified frequencies using the set of user-defined
+parameters.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>frequency</strong> (<em>List</em><em>[</em><em>float</em><em>]</em>) – list of frequency point on which the impedance must be computed</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>the array of complex impedance values computed in the point specified</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>numpy.ndarray</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+</section>
+
+    <script type="text/x-thebe-config">
+    {
+        requestKernel: true,
+        binderOptions: {
+            repo: "binder-examples/jupyter-stacks-datascience",
+            ref: "master",
+        },
+        codeMirrorConfig: {
+            theme: "abcdef",
+            mode: "python"
+        },
+        kernelOptions: {
+            kernelName: "python3",
+            path: "./API"
+        },
+        predefinedOutput: true
+    }
+    </script>
+    <script>kernelName = 'python3'</script>
+
+              </div>
+              
+              
+              <!-- Previous / next buttons -->
+<div class='prev-next-area'>
+    <a class='left-prev' id="prev-link" href="../api.html" title="previous page">
+        <i class="fas fa-angle-left"></i>
+        <div class="prev-next-info">
+            <p class="prev-next-subtitle">previous</p>
+            <p class="prev-next-title">API Documentation</p>
+        </div>
+    </a>
+    <a class='right-next' id="next-link" href="api_database.html" title="next page">
+    <div class="prev-next-info">
+        <p class="prev-next-subtitle">next</p>
+        <p class="prev-next-title">The <code class="docutils literal notranslate"><span class="pre">ges-eis-toolbox.database</span></code> module</p>
+    </div>
+    <i class="fas fa-angle-right"></i>
+    </a>
+</div>
+              
+          </main>
+          
+
+      </div>
+    </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="../_static/scripts/pydata-sphinx-theme.js?digest=1999514e3f237ded88cf"></script>
+<footer class="footer mt-5 mt-md-0">
+  <div class="container">
+    
+    <div class="footer-item">
+      <p class="copyright">
+    &copy; Copyright 2022.<br>
+</p>
+    </div>
+    
+    <div class="footer-item">
+      <p class="sphinx-version">
+Created using <a href="http://sphinx-doc.org/">Sphinx</a> 4.5.0.<br>
+</p>
+    </div>
+    
+  </div>
+</footer>
+  </body>
+</html>
